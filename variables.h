@@ -116,6 +116,7 @@ bool clearCoin = true;
 bool EnjuagueFirst = true;
 bool paroActivado = false;
 bool tiempoExcedido = false;
+int contadorParo = 1;
 
 // DISPLAY LCD 
  byte f1[8] = {

@@ -353,7 +353,15 @@ void producto () {
     if(digitalRead(bt1) == LOW){
       delay(100);
       if(digitalRead(bt1) == LOW){ 
-        paro();
+        delay(100);
+        if(digitalRead(bt1) == HIGH)
+        {
+          if(contadorParo<=2)
+          {
+            paro();
+            contadorParo++;
+          }
+        }  
       }
     }
     if(pulseSensor > 0){

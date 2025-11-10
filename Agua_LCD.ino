@@ -14,8 +14,12 @@ Se cambia la interrupcion del billetero y monedero a los otros pines con el opto
 
 1.6
 Se cambia para que el control de ventas no se reinicie cuando llega a 256 compras
+
+1.7
+Se arregla el bug que permitia despachar presionando el boton de cambio
 */
-#define firmware "Andromeda 1.6"
+
+#define firmware "1.7"
 
 #include <EEPROM.h>
 #include <LCD.h>
@@ -135,6 +139,7 @@ void loop() {
   
   if ( CreditAcum == 0) {
     cero ();
+    contadorParo=1;
   }
 
   // Monedero  
@@ -246,7 +251,7 @@ void loop() {
       if (digitalRead(bt2) == LOW) {
         delay(100);
         if (digitalRead(bt2) == LOW) {
-          
+          contadorParo=1;
           precio = price1;
           if(CreditAcum >= price1) {
             producto1 = EEPROM.readInt(4);    
@@ -267,7 +272,7 @@ void loop() {
       if (digitalRead(bt3) == LOW) {
         delay(100);
         if (digitalRead(bt3) == LOW) {
-          
+          contadorParo=1;
           precio = price2;
           if(CreditAcum >= price2) {
             producto2 = EEPROM.readInt(8);    
@@ -288,7 +293,7 @@ void loop() {
       if (digitalRead(bt4) == LOW) {
         delay(100);
         if (digitalRead(bt4) == LOW) {
-          
+          contadorParo=1;
           precio = price3;
           if(CreditAcum >= price3) {
             producto3 = EEPROM.readInt(12);    
