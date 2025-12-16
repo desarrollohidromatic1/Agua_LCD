@@ -4,25 +4,31 @@ void sales () {
   ventasProducto1= EEPROM.readInt(36);
   ventasProducto2= EEPROM.readInt(40);
   ventasProducto3= EEPROM.readInt(44);
+  ventasProducto4= EEPROM.readInt(addr_ventasProducto4);
 
   while ( MoodSalesControl == true ) {
-    lcd.setCursor(0, 0);
-    lcd.print("Control de ventas:");
+    //lcd.setCursor(0, 0);
+    //lcd.print("Control de ventas:");
     //Producto 1
-    lcd.setCursor(0, 1);
+    lcd.setCursor(0, 0);
     lcd.print("Producto 1:");
-    lcd.setCursor(12, 1);
+    lcd.setCursor(12, 0);
     lcd.print(ventasProducto1);
     //Producto 2
-    lcd.setCursor(0, 2);
+    lcd.setCursor(0, 1);
     lcd.print("Producto 2:");
-    lcd.setCursor(12, 2);
+    lcd.setCursor(12, 1);
     lcd.print(ventasProducto2);
     //Producto 3
-    lcd.setCursor(0, 3);
+    lcd.setCursor(0, 2);
     lcd.print("Producto 3:");
-    lcd.setCursor(12, 3);
+    lcd.setCursor(12, 2);
     lcd.print(ventasProducto3);
+    //Producto 4
+    lcd.setCursor(0, 3);
+    lcd.print("Producto 4:");
+    lcd.setCursor(12, 3);
+    lcd.print(ventasProducto4);
 
     // Resetear con el boton de producto 3
     if(digitalRead(bt4) == LOW){
@@ -31,11 +37,14 @@ void sales () {
         ventasProducto1 = 0;
         ventasProducto2 = 0;
         ventasProducto3 = 0;
+        ventasProducto4 = 0;
         EEPROM.writeInt(36,ventasProducto1);
         EEPROM.commit();
         EEPROM.writeInt(40,ventasProducto2);
         EEPROM.commit();
         EEPROM.writeInt(44,ventasProducto3);        
+        EEPROM.commit();
+        EEPROM.writeInt(addr_ventasProducto4,ventasProducto4);        
         EEPROM.commit();
         lcd.clear();
       }
