@@ -15,6 +15,11 @@ LiquidCrystal_I2C lcd(I2C_ADDR, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 #define bt5 15 // Cambio
 #define bt6 12 // Menu
 #define btReset 10 //RESET
+
+#define addr_ventasProducto4 100
+#define addr_producto4       104
+#define addr_price4          108
+
 int LedReset = 21;
 bool moodRestaurar = false;
 int LedProg = 13;
@@ -90,21 +95,25 @@ bool moodEnjuague = false;
 bool moodProducto1 = false;
 bool moodProducto2 = false;
 bool moodProducto3 = false;
+bool moodProducto4 = false;
 
 bool changepriceEn = false;
 bool changeprice1 = false;
 bool changeprice2 = false;
 bool changeprice3 = false;
+bool changeprice4 = false;
 
 unsigned int ventasEnjuague = 0;
 unsigned int ventasProducto1 = 0;
 unsigned int ventasProducto2 = 0;
 unsigned int ventasProducto3 = 0;
+unsigned int ventasProducto4 = 0;
 
 unsigned int priceEnjuague = 2;
 unsigned int price1 = 4;
 unsigned int price2 = 10;
 unsigned int price3 = 14;
+unsigned int price4 = 18;
 unsigned int precio = 0;
 
 // ====================================================================

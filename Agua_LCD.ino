@@ -309,6 +309,30 @@ void loop() {
           }                
         }
       }
+
+      // Producto 4
+      if (digitalRead(bt5) == LOW) {
+        delay(100);
+        if (digitalRead(bt5) == LOW) {
+          contadorParo=1;
+          precio = price4;
+          if(CreditAcum >= price4) {
+            producto4 = EEPROM.readInt(addr_producto4);    
+            product = producto4;
+            producto();
+            
+            ventasProducto4 += 1;  
+            EEPROM.writeInt(addr_ventasProducto4,ventasProducto4);
+            EEPROM.commit(); 
+          }
+          else {            
+            precioMostrar();
+          }                
+        }
+      }
+
+
+
     }
   }
 }
