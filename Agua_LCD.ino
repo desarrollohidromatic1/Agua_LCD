@@ -32,7 +32,7 @@ Se arregla el bug que permitia despachar presionando el boton de cambio
 
 
 void setup() {
- // Serial.begin(9600);
+  Serial.begin(115200);
   EEPROM.begin(512);
   setupGeneral();
   if(digitalRead(btReset) == LOW){
@@ -111,6 +111,23 @@ void setup() {
   pinMode (13, OUTPUT);
   digitalWrite(13, HIGH); 
   */
+
+  Serial.println("PRUEBAS: ");
+  Serial.println(tiempoEnjuague);
+  Serial.println(producto1);
+  Serial.println(producto2);
+  Serial.println(producto3);
+  Serial.println(producto4);
+  Serial.println(priceEnjuague);
+  Serial.println(price1);
+  Serial.println(price2);
+  Serial.println(price3);
+  Serial.println(price4);
+  Serial.println(ventasProducto1);
+  Serial.println(ventasProducto2);
+  Serial.println(ventasProducto3);
+  Serial.println(ventasProducto4);
+ 
 }
 
 void loop() {

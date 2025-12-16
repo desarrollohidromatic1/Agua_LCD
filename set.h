@@ -76,8 +76,9 @@ void setupGeneral () {
 
 void firstTime () {
   tiempoEnjuague = 3000;
-  EEPROM.writeFloat(100, tiempoEnjuague);
+  EEPROM.writeInt(100, tiempoEnjuague);
   EEPROM.commit();  
+
   producto1 = 1;
   EEPROM.writeInt(4, producto1);
   EEPROM.commit();  

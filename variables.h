@@ -16,9 +16,9 @@ LiquidCrystal_I2C lcd(I2C_ADDR, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 #define bt6 12 // Menu
 #define btReset 10 //RESET
 
-#define addr_ventasProducto4  100
-#define addr_producto4        110
-#define addr_price4           115
+#define addr_ventasProducto4  200
+#define addr_producto4        210
+#define addr_price4           215
 #define time_exit            1000
 
 int LedReset = 21;
@@ -66,7 +66,7 @@ volatile int pulseSensor = 0;
 unsigned long LastTimeSensor = 0;
 unsigned long pulseAcumSensor = 0;
 
-float producto1 = 1, producto2 = 1, producto3 = 1, producto4 = 1, product = 1, tiempoEnjuague = 0;
+float producto1 = 1, producto2 = 1, producto3 = 1, producto4 = 1, product = 1, tiempoEnjuague = 3;
 unsigned long tiempo = 0, inicio = 0, fin = 0, tiempoParo = 0;
 unsigned long tiempoMuestra = 0;
 unsigned long qlitros = 0;
