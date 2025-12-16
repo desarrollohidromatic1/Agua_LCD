@@ -19,7 +19,7 @@ Se cambia para que el control de ventas no se reinicie cuando llega a 256 compra
 Se arregla el bug que permitia despachar presionando el boton de cambio
 */
 
-#define firmware "1.7"
+#define firmware "1.7 AlmaIxtapa"
 
 #include <EEPROM.h>
 #include <LCD.h>
@@ -205,6 +205,7 @@ void loop() {
     if ( debouncePulse > timeWait ) {
 
       // Cambio
+      /*
       if ( digitalRead(bt5) == LOW){
         delay(100);
         if ( digitalRead(bt5) == LOW) {
@@ -226,7 +227,7 @@ void loop() {
           pulseBill = 0;
           resetCredit = millis();
         }
-      }
+      }*/
 
       // Enjuague
       if( digitalRead(bt1) == LOW) {
@@ -317,7 +318,9 @@ void loop() {
           contadorParo=1;
           precio = price4;
           if(CreditAcum >= price4) {
-            producto4 = EEPROM.readInt(addr_producto4);    
+            producto4 = EEPROM.readInt(addr_producto4);
+            Serial.println("Venta producto 4: ");
+            Serial.println(producto4);
             product = producto4;
             producto();
             

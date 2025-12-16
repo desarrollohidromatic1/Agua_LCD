@@ -72,7 +72,7 @@ void calibration () {
       delay(100);
       if(digitalRead(bt1) == LOW) { 
          
-        tiempoEnjuague = EEPROM.readInt(100);    
+        tiempoEnjuague = EEPROM.readFloat(100);    
         tiempoMuestra = tiempoEnjuague / 1000;          
         lcd.clear();
         lcd.setCursor(2,0);
@@ -94,7 +94,8 @@ void calibration () {
           tiempoMuestra = tiempoEnjuague / 1000;   
           lcd.setCursor(10,3);
           lcd.print(tiempoMuestra);
-
+          
+          
           // Aumenta con boton cambio
           if(digitalRead(bt5) == LOW){
             delay(100);
@@ -132,7 +133,13 @@ void calibration () {
               lcd.print("seg");
               moodEnjuague = false;      
               EEPROM.writeInt(100, tiempoEnjuague);
-              EEPROM.commit();      
+              EEPROM.commit();
+
+              delay(time_exit);
+              MoodCalibration = false;
+              flecha = 1;        
+              lcd.clear();
+              digitalWrite(ReleOzono, LOW);       
             }
           }
         }
@@ -201,7 +208,7 @@ void calibration () {
             }                    
           }                    
           // GUARDAR Y SALIR
-          if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
+          if(digitalRead(bt1) || digitalRead(bt6) == LOW ) {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(4, producto1);
@@ -215,7 +222,12 @@ void calibration () {
               lcd.print("guardado");
               lcd.setCursor(8,2);
               lcd.print(producto1);
-              delay(500);
+
+              delay(time_exit);
+              MoodCalibration = false;
+              flecha = 1;        
+              lcd.clear();
+              digitalWrite(ReleOzono, LOW); 
             }
           }
         }        
@@ -301,8 +313,12 @@ void calibration () {
               lcd.print("guardado");
               lcd.setCursor(8,2);
               lcd.print(producto2);
-              delay(500);
-             // Serial.print("Guardado:"); Serial.println(producto2);
+              
+              delay(time_exit);
+              MoodCalibration = false;
+              flecha = 1;        
+              lcd.clear();
+              digitalWrite(ReleOzono, LOW); 
             }
           }
         }        
@@ -384,23 +400,107 @@ void calibration () {
               lcd.print("guardado");
               lcd.setCursor(8,2);
               lcd.print(producto3);
-              delay(500);
+
+              delay(time_exit);
+              MoodCalibration = false;
+              flecha = 1;        
+              lcd.clear();
+              digitalWrite(ReleOzono, LOW); 
             }
           }
         }        
       }
     }
 
-    // Salir de calibracion
-    if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
-      delay(100);
-      if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
-        MoodCalibration = false;
-        flecha = 1;        
+  
+    // Producto 4
+    if(digitalRead(bt5) == LOW) {
+      delay(100);      
+      if(digitalRead(bt5) == LOW) {   
+        producto4 = EEPROM.readInt(addr_producto4);             
         lcd.clear();
-        digitalWrite(ReleOzono, LOW);
+        lcd.setCursor(2,0);
+        lcd.print("Modificacion de");
+        lcd.setCursor(5,1);
+        lcd.print("producto 4");  
+        lcd.setCursor(0,2);
+        lcd.print("Pulsos 1:");      
+        lcd.setCursor(10,2);
+        lcd.print(producto4);      
+        lcd.setCursor(0,3);
+        lcd.print("Pulsos 2:");   
+        moodProducto4 = true;           
+        delay(500);
+        while(moodProducto4 == true){
+          if ( digitalRead(bt5) == LOW ){ 
+            delay(100);
+            if ( digitalRead(bt5) == LOW ) {                         
+            pulseSensor = 0;
+            pulseAcumSensor = 0;
+            digitalWrite(ReleProducto, HIGH);
+            while ( digitalRead(bt5) == LOW ){ 
+              if(digitalRead(bt1) == LOW){
+                delay(100);
+                if(digitalRead(bt1) == LOW){ 
+                  paro();
+                }
+              }                
+              /*           
+              int state = digitalRead(sensor);
+              if(state == HIGH && lastState == LOW){
+                pulseSensor ++;
+              }
+              lastState = state;
+              */
+              if (pulseSensor > 0){
+                pulseAcumSensor += pulseSensor;
+                pulseSensor = 0;
+                qlitros = ((pulseAcumSensor * 100)/ producto4);
+                lcd.setCursor(10,3);
+                lcd.print(pulseAcumSensor);  
+              }
+
+              if(tiempoExcedido == true){
+                pulseAcumSensor = producto4;
+                tiempoExcedido = false;
+              } 
+              producto4 = pulseAcumSensor;                 
+            }
+          }
+            digitalWrite(ReleProducto, LOW);          
+            producto4 = pulseAcumSensor;    
+            if (producto4 < 1){
+              producto4 = 1;
+            }                    
+          }                    
+          // GUARDAR Y SALIR
+          if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
+            delay(100);
+            if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
+              EEPROM.writeInt(addr_producto4, producto4);
+              EEPROM.commit();
+              moodProducto4 = false;
+              delay(100);
+              lcd.clear();
+              lcd.setCursor(1,0);
+              lcd.print("Producto 4");
+              lcd.setCursor(6,1);
+              lcd.print("guardado");
+              lcd.setCursor(8,2);
+              lcd.print(producto4);
+
+              delay(time_exit);
+              MoodCalibration = false;
+              flecha = 1;        
+              lcd.clear();
+              digitalWrite(ReleOzono, LOW); 
+            }
+          }
+        }        
       }
     }
+
+
   }
 }
 
@@ -465,6 +565,10 @@ void price () {
               lcd.print(priceEnjuague);
               changepriceEn = false;
               delay(500);
+
+              MoodChangePrice = false;
+              flecha = 1;        
+              lcd.clear();      
             }
           }
         }
@@ -528,7 +632,11 @@ void price () {
               price1 = EEPROM.readInt(20);
               lcd.print(price1);
               changeprice1 = false;
-              delay(500);
+
+              delay(time_exit);
+              MoodChangePrice = false;
+              flecha = 1;        
+              lcd.clear(); 
             }
           }
         }
@@ -592,6 +700,11 @@ void price () {
               price2 = EEPROM.readInt(24);
               lcd.print(price2);
               changeprice2 = false;
+
+              delay(time_exit);
+              MoodChangePrice = false;
+              flecha = 1;        
+              lcd.clear(); 
             }
           }
         }
@@ -655,7 +768,79 @@ void price () {
               price3 = EEPROM.readInt(28);
               lcd.print(price3);
               changeprice3 = false;
-              delay(500);
+
+              delay(time_exit);
+              MoodChangePrice = false;
+              flecha = 1;        
+              lcd.clear(); 
+            }
+          }
+        }
+      }
+    }
+
+    // Precio producto 4
+    if(digitalRead(bt5) == LOW) {
+      delay(100);      
+      if(digitalRead(bt5) == LOW) {           
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Precio producto 4");
+        lcd.setCursor(8,1);
+        lcd.print("$");
+        lcd.setCursor(0,2);
+        lcd.print("Bt3:+1");
+        lcd.setCursor(0,3);
+        lcd.print("Bt2:-1");
+        lcd.setCursor(14,3);
+        lcd.print("Bt1:OK");
+        changeprice4 = true;
+        while (changeprice4 == true) {
+          lcd.setCursor(9, 1);
+          lcd.print(price4); 
+
+          if(digitalRead(bt3) == LOW){
+            delay(100);
+            if(digitalRead(bt3) == LOW){
+              price4 += 1;
+            }
+          }
+
+          if(digitalRead(bt2) == LOW){
+            delay(100);
+            if(digitalRead(bt2) == LOW){              
+              if(price4 == 0){
+                price4 = 0;
+              }
+              else{
+                price4 -= 1;
+              }
+              if(price4 < 10){
+                lcd.setCursor(10, 1);
+                lcd.print(" "); 
+              }
+            }
+          }
+
+          if(digitalRead(bt1) == LOW){
+            delay(100);
+            if(digitalRead(bt1) == LOW){
+              lcd.clear();
+              EEPROM.writeInt(addr_price4, price4);              
+              EEPROM.commit();
+              lcd.setCursor(0,2);
+              lcd.print("Precio Guardado");
+              lcd.setCursor(8,3);
+              lcd.print("$");
+              lcd.setCursor(9,3);
+              price4 = EEPROM.readInt(addr_price4);
+              lcd.print(price4);
+              changeprice4 = false;
+
+              delay(time_exit);
+              MoodChangePrice = false;
+              flecha = 1;        
+              lcd.clear(); 
             }
           }
         }
@@ -663,14 +848,14 @@ void price () {
     }
 
     // Salir de calibracion
-    if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
-      delay(100);
-      if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
-        MoodChangePrice = false;
-        flecha = 1;        
-        lcd.clear();        
-      }
-    }
+    //if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
+    //  delay(100);
+    //  if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
+    //    MoodChangePrice = false;
+    //    flecha = 1;        
+    //    lcd.clear();        
+    //  }
+    //}
   }
 }
 
@@ -813,6 +998,8 @@ void moodMenu () {
         lcd.print("Modo");
         lcd.setCursor(5,1);
         lcd.print("calibracion");
+        lcd.setCursor(1,3);
+        lcd.print("Seleccione producto");
         MoodCalibration = true;
         delay(1000);
         calibration();

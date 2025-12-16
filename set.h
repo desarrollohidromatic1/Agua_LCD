@@ -75,8 +75,8 @@ void setupGeneral () {
 } 
 
 void firstTime () {
-  tiempoEnjuague = 4000;
-  EEPROM.writeInt(100, tiempoEnjuague);
+  tiempoEnjuague = 3000;
+  EEPROM.writeFloat(100, tiempoEnjuague);
   EEPROM.commit();  
   producto1 = 1;
   EEPROM.writeInt(4, producto1);
@@ -86,22 +86,27 @@ void firstTime () {
   EEPROM.commit();
   producto3 = 1;
   EEPROM.writeInt(12, producto3);
-  EEPROM.commit();  
+  EEPROM.commit(); 
+  producto4 = 1;
+  EEPROM.writeInt(addr_producto4, producto4);
+  EEPROM.commit(); 
+
   priceEnjuague = 0;
   EEPROM.writeInt(16, priceEnjuague);
   EEPROM.commit();  
-  price1 = 7;
+  price1 = 5;
   EEPROM.writeInt(20, price1);  
   EEPROM.commit();    
   price2 = 10;
   EEPROM.writeInt(24, price2);   
   EEPROM.commit();   
-  price3 = 14;
+  price3 = 15;
   EEPROM.writeInt(28, price3);   
   EEPROM.commit(); 
-  price4 = 18;
+  price4 = 20;
   EEPROM.writeInt(addr_price4, price4);   
   EEPROM.commit(); 
+
   ventasProducto1 = 0;
   ventasProducto2 = 0;
   ventasProducto3 = 0;
@@ -114,6 +119,7 @@ void firstTime () {
   EEPROM.commit(); 
   EEPROM.writeInt(addr_ventasProducto4,ventasProducto4);  
   EEPROM.commit(); 
+  
   hopper2 = 0;
   EEPROM.writeInt(48, hopper2);
   EEPROM.commit(); 
