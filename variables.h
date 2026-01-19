@@ -85,6 +85,7 @@ bool MoodCalibration = false;
 bool MoodChangePrice = false;
 bool MoodHopper2 = false;
 bool MoodVersion = false;
+bool MoodFeriar = false;
 
 bool moodEnjuague = false;
 bool moodProducto1 = false;
@@ -106,6 +107,8 @@ unsigned int price1 = 4;
 unsigned int price2 = 10;
 unsigned int price3 = 14;
 unsigned int precio = 0;
+int feriar = 0;
+bool yaVendi = false;
 
 // ====================================================================
 

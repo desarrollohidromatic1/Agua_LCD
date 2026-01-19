@@ -738,6 +738,78 @@ void availableHopper2 () {
   }
 }
 
+void menu_feriar() 
+{  
+   bool flag_MoodFeriar = false;
+   while (MoodFeriar == true) {
+    // Movernos en el menu
+    if(digitalRead(bt1) == LOW) {
+      delay(100);
+      if(digitalRead(bt1) == LOW) {
+        flecha += 1;
+        if(flecha == 8){
+          flecha = 6;     
+          lcd.setCursor(0,2);
+          lcd.print("  ");     
+        }        
+      }
+    }
+
+    if( flecha == 6 && flag_MoodFeriar == false) {
+      lcd.setCursor(0,1);
+      lcd.print("->");      
+    }
+
+    if( flecha == 7 && flag_MoodFeriar == false) {
+      lcd.setCursor(0,1);
+      lcd.print("  ");
+      lcd.setCursor(0,2);
+      lcd.print("->");
+    }
+
+    if(digitalRead(bt2) == LOW && flecha == 6 && flag_MoodFeriar == false) {
+      delay(100);
+      if(digitalRead(bt2) == LOW) {
+        lcd.clear();
+        lcd.home();
+        lcd.print(" -Se puede feriar-");
+        lcd.setCursor(0,1);
+        lcd.print("   ");        
+        feriar = 1;
+        EEPROM.writeInt(250, feriar);
+        EEPROM.commit();
+        flag_MoodFeriar = true;         
+      }
+    } 
+
+    if(digitalRead(bt2) == LOW && flecha == 7 && flag_MoodFeriar == false) {
+      delay(100);
+      if(digitalRead(bt2) == LOW) {
+        lcd.clear();
+        lcd.home();
+        lcd.print("-No se puede feriar-");
+        lcd.setCursor(0,2);
+        lcd.print("   ");        
+        feriar = 0;
+        EEPROM.writeInt(250, feriar);
+        EEPROM.commit();             
+        flag_MoodFeriar = true;
+      }
+    }
+
+    // Salir de feriar
+    if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
+      delay(100);
+      if(digitalRead(bt5) == LOW || digitalRead(bt6) == LOW) {
+        MoodFeriar = false;
+        flecha = 1;        
+        lcd.clear();
+        flag_MoodFeriar == false;        
+      }
+    }
+  }
+}
+
 void moodMenu () {
 
   while(ModoMenu == true){
@@ -754,10 +826,11 @@ void moodMenu () {
     delay(100);
     if(digitalRead(bt1) == LOW) {
       flecha += 1;
+      Serial.println(flecha); // Debug
       if(flecha == 4){
         lcd.clear();
       }
-      if(flecha == 6){        
+      if(flecha == 7){        
         lcd.clear();
         flecha = 1;        
       }
@@ -844,7 +917,9 @@ void moodMenu () {
     lcd.setCursor(2,1);
     lcd.print("Hopper 2");  
     lcd.setCursor(2,2);
-    lcd.print("Version");    
+    lcd.print("Version");
+    lcd.setCursor(2,3);
+    lcd.print("Feriar");    
 
     if(digitalRead(bt2) == LOW){
       delay(100);
@@ -874,7 +949,9 @@ void moodMenu () {
     lcd.setCursor(0,2);
     lcd.print("->");
     lcd.setCursor(2,2);
-    lcd.print("Version");    
+    lcd.print("Version");
+    lcd.setCursor(2,3);
+    lcd.print("Feriar");        
 
     if(digitalRead(bt2) == LOW){
       delay(100);
@@ -899,6 +976,41 @@ void moodMenu () {
       }
     }
   }
+
+  // Feriar
+  if (flecha == 6){
+    lcd.setCursor(0,1);
+    lcd.print("  ");
+    lcd.setCursor(2,1);
+    lcd.print("Hopper 2");
+    lcd.setCursor(0,2);
+    lcd.print("  ");  
+    lcd.setCursor(2,2);
+    lcd.print("Version");
+    lcd.setCursor(0,3);
+    lcd.print("->");
+    lcd.setCursor(2,3);
+    lcd.print("Feriar");        
+
+    if(digitalRead(bt2) == LOW){
+      delay(100);
+      if(digitalRead(bt2) == LOW){   
+        lcd.clear();
+        lcd.setCursor(6, 0);
+        lcd.print("Feriar"); 
+        lcd.setCursor(0,1);
+        lcd.print("->");
+        lcd.setCursor(2,1);
+        lcd.print("Habilitar");
+        lcd.setCursor(2,2);
+        lcd.print("Deshabilitar");
+        MoodFeriar = true;
+        delay(1000);
+        menu_feriar();        
+      }
+    }    
+  }
+
 }
 
 }
@@ -917,4 +1029,3 @@ void readMenu () {
     lcd.clear();
   }
 }
- 

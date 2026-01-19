@@ -111,6 +111,9 @@ void firstTime () {
   hopper2 = 0;
   EEPROM.writeInt(48, hopper2);
   EEPROM.commit(); 
+  feriar = 1;
+  EEPROM.writeInt(250, feriar);
+  EEPROM.commit();
 }
 
 void readEEPROM () {
@@ -125,7 +128,8 @@ void readEEPROM () {
   ventasProducto1 = EEPROM.readInt(36);
   ventasProducto2 = EEPROM.readInt(40);
   ventasProducto3 = EEPROM.readInt(44);          
-  hopper2 = EEPROM.readInt(48);  
+  hopper2 = EEPROM.readInt(48);
+  feriar  = EEPROM.readInt(250);  
   if ( hopper2 == 1) {
     Cambio5 = true;
   }
