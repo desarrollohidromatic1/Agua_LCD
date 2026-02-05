@@ -29,10 +29,10 @@ Se arregla el bug que permitia despachar presionando el boton de cambio
 #include "master.h"
 #include "menu.h"
 
-
-
 void setup() {
- // Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.print("Version Codigo: ");
+  Serial.println(firmware);
   EEPROM.begin(512);
   setupGeneral();
   if(digitalRead(btReset) == LOW){
