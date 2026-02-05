@@ -111,14 +111,6 @@ void setup() {
     Cambio5 = false;
   }
   inicio = millis();
-  /*
-  // Pruebas con Serial
-  Serial.begin(9600);
-  pinMode (13, OUTPUT);
-  digitalWrite(13, HIGH); 
-  */
-  Serial.print("Valor de feriar: ");
-  Serial.println(feriar);
 }
 
 void loop() {

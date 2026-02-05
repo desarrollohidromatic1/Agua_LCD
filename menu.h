@@ -826,7 +826,7 @@ void moodMenu () {
     delay(100);
     if(digitalRead(bt1) == LOW) {
       flecha += 1;
-      Serial.println(flecha); // Debug
+
       if(flecha == 4){
         lcd.clear();
       }
