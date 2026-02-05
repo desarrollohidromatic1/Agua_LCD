@@ -23,7 +23,7 @@ Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
 
 */
 
-#define firmware "1.8"
+#define firmware "1.9"
 
 #include <EEPROM.h>
 #include <LCD.h>
