@@ -17,9 +17,13 @@ Se cambia para que el control de ventas no se reinicie cuando llega a 256 compra
 
 1.7
 Se arregla el bug que permitia despachar presionando el boton de cambio
+
+1.8
+Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
+
 */
 
-#define firmware "1.7"
+#define firmware "1.8"
 
 #include <EEPROM.h>
 #include <LCD.h>
@@ -31,7 +35,7 @@ Se arregla el bug que permitia despachar presionando el boton de cambio
 
 void setup() {
   Serial.begin(115200);
-  Serial.print("Version Codigo: ");
+  Serial.println("VAP iniciado");
   Serial.println(firmware);
   EEPROM.begin(512);
   setupGeneral();
@@ -105,40 +109,13 @@ void setup() {
     Cambio5 = false;
   }
   inicio = millis();
-  /*
-  // Pruebas con Serial
-  Serial.begin(9600);
-  pinMode (13, OUTPUT);
-  digitalWrite(13, HIGH); 
-  */
 }
 
 void loop() {
   readMenu();  
-  /*
-  // Pruebas con Serial
-  digitalWrite(13, LOW); 
-  delay(100);
-  digitalWrite(13, HIGH);
-  delay(100); 
-  if ( Serial.available() > 0){
-    int numero = Serial.parseInt();
-    //variable3 = 0;
-    //Serial.print("Variable 1: "); Serial.println(variable1);
-    if (numero == 1){
-      variable1 += 100;
-      variable2 = ((variable1 * 100) / variable3);
-      Serial.print("numero: "); Serial.println(numero);
-      Serial.print("Variable 3: "); Serial.println(variable3);
-      Serial.print("Variable 2: "); Serial.println(variable2);
-    }
-  }
-  */
-  //variable2 = ((variable1 * 100) / variable3);
-  //Serial.print("Variable: "); Serial.println(variable2);
-  
   if ( CreditAcum == 0) {
     cero ();
+    yaVendi=false;
     contadorParo=1;
   }
 
@@ -208,23 +185,51 @@ void loop() {
       if ( digitalRead(bt5) == LOW){
         delay(100);
         if ( digitalRead(bt5) == LOW) {
-          if (CreditAcum > 4){
-            if (Cambio5 == true){
-              entregarCambio5();
+
+          if(feriar == true)
+          { 
+              if (CreditAcum > 4){
+                if (Cambio5 == true){
+                  entregarCambio5();
+                }
+              }
+              if ((CreditAcum > 0 && recoja == false) && Cambio1 == true) {
+                entregarCambio1();
+              }
+              recoja = false;
+              if (Cambio1 == false) {
+                noCambio();
+              }
+              lcd.clear();
+              clearCoin = true;
+              pulseCoin = 0;
+              pulseBill = 0;
+              resetCredit = millis();
+          }
+          else
+          { 
+            if(yaVendi == true)
+            {
+              if (CreditAcum > 4){
+              if (Cambio5 == true){
+                  entregarCambio5();
+                }
+              }
+              if ((CreditAcum > 0 && recoja == false) && Cambio1 == true) {
+                entregarCambio1();
+              }
+              recoja = false;
+              if (Cambio1 == false) {
+                noCambio();
+              }
+              lcd.clear();
+              clearCoin = true;
+              pulseCoin = 0;
+              pulseBill = 0;
+              resetCredit = millis();
             }
           }
-          if ((CreditAcum > 0 && recoja == false) && Cambio1 == true) {
-            entregarCambio1();
-          }
-          recoja = false;
-          if (Cambio1 == false) {
-            noCambio();
-          }
-          lcd.clear();
-          clearCoin = true;
-          pulseCoin = 0;
-          pulseBill = 0;
-          resetCredit = millis();
+
         }
       }
 
@@ -261,6 +266,7 @@ void loop() {
             ventasProducto1 += 1;  
             EEPROM.writeInt(36,ventasProducto1);            
             EEPROM.commit(); 
+            yaVendi = true;
           }
           else {            
             precioMostrar();
@@ -281,7 +287,8 @@ void loop() {
             
             ventasProducto2 += 1;  
             EEPROM.writeInt(40,ventasProducto2);
-            EEPROM.commit(); 
+            EEPROM.commit();
+            yaVendi = true; 
           }
           else {            
             precioMostrar();
@@ -302,7 +309,8 @@ void loop() {
             
             ventasProducto3 += 1;  
             EEPROM.writeInt(44,ventasProducto3);
-            EEPROM.commit(); 
+            EEPROM.commit();
+            yaVendi = true; 
           }
           else {            
             precioMostrar();

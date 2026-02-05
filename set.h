@@ -90,13 +90,13 @@ void firstTime () {
   priceEnjuague = 0;
   EEPROM.writeInt(16, priceEnjuague);
   EEPROM.commit();  
-  price1 = 7;
+  price1 = 5;
   EEPROM.writeInt(20, price1);  
   EEPROM.commit();    
   price2 = 10;
   EEPROM.writeInt(24, price2);   
   EEPROM.commit();   
-  price3 = 14;
+  price3 = 15;
   EEPROM.writeInt(28, price3);   
   EEPROM.commit(); 
   ventasProducto1 = 0;
@@ -111,6 +111,10 @@ void firstTime () {
   hopper2 = 0;
   EEPROM.writeInt(48, hopper2);
   EEPROM.commit(); 
+  feriar = 1;
+  EEPROM.writeInt(250, feriar);
+  EEPROM.commit();
+  Serial.println("Variables inicializadas");
 }
 
 void readEEPROM () {
@@ -125,7 +129,8 @@ void readEEPROM () {
   ventasProducto1 = EEPROM.readInt(36);
   ventasProducto2 = EEPROM.readInt(40);
   ventasProducto3 = EEPROM.readInt(44);          
-  hopper2 = EEPROM.readInt(48);  
+  hopper2 = EEPROM.readInt(48);
+  feriar  = EEPROM.readInt(250);  
   if ( hopper2 == 1) {
     Cambio5 = true;
   }
