@@ -33,8 +33,6 @@ Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
 #include "master.h"
 #include "menu.h"
 
-
-
 void setup() {
   Serial.begin(115200);
   Serial.println("VAP iniciado");
