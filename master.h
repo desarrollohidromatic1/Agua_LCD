@@ -339,58 +339,80 @@ void paro () {
   lcd.setCursor(5,2);
   lcd.print("%");
 }
-void producto () {
+void producto () { // NOTE: Despacho: despacho de producto
+
+  unsigned long despacho_porsentaje_lcd_refresh_time_millis_last = 0;
+  unsigned long despacho_porsentaje_lcd_refresh_time_millis_current = 0;
+  unsigned long DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL = 50;
   
   pulseSensor = 0;
   pulseAcumSensor = 0;
+  
+  Serial.println("Despacho - precio: " + String(precio));
+  Serial.println("Despacho - credit acum: " + String(CreditAcum));
+  Serial.println("Despacho - pulsos calibracion: " + String(product));
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Despachando...");
   lcd.setCursor(5,2);
   lcd.print("%");
+
+  despacho_porsentaje_lcd_refresh_time_millis_last = millis();
   digitalWrite(ReleProducto, HIGH);
-  while(pulseAcumSensor < product){
-    if(digitalRead(bt1) == LOW){
+  while(pulseAcumSensor < product)
+  {
+    if(digitalRead(bt1) == LOW)
+    {
       delay(100);
-      if(digitalRead(bt1) == LOW){ 
-        delay(100);
-        if(digitalRead(bt1) == HIGH)
-        {
+      if(digitalRead(bt1) == LOW)
+      {
+        // delay(100);
+        // if(digitalRead(bt1) == HIGH)
+        // {
           if(contadorParo<=2)
           {
+            Serial.println("Despacho - Paro: activado por usuario"); // HACK: Log: paro activado por usuario
+            Serial.println("Despacho - Paro: contadorparo inicial: " + String(contadorParo));
+            Serial.println("Despacho - Paro: Tiempo restante inicial: " + String(tiempoParo) + " millisegundos");
             paro();
             contadorParo++;
+            Serial.println("Despacho - Paro: desactivado"); // HACK: Log: paro desactivado por usuario
+            Serial.println("Despacho - Paro: Tiempo restante final: " + String(tiempoParo) + " millisegundos");
+            Serial.println("Despacho - Paro: contadorparo final: " + String(contadorParo));
           }
-        }  
+        // }
       }
     }
-    if(pulseSensor > 0){
-      pulseAcumSensor += pulseSensor;
-      pulseSensor = 0;       
-      qlitros = ((pulseAcumSensor * 100)/ product);
+    
+    despacho_porsentaje_lcd_refresh_time_millis_current = millis();
+    if(despacho_porsentaje_lcd_refresh_time_millis_current - despacho_porsentaje_lcd_refresh_time_millis_last >= DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL)
+    {
+      despacho_porsentaje_lcd_refresh_time_millis_last = despacho_porsentaje_lcd_refresh_time_millis_current;
+      
+      qlitros = (unsigned int)((pulseAcumSensor * 100.0)/ product);
       lcd.setCursor(7,2);
       lcd.print(qlitros);
+      Serial.println("Despacho - pulsos/porcentaje: " + String(pulseAcumSensor) + " / " + String(qlitros)); // HACK: Log: porcentaje/porcentaje despachado
     }
-    /*
-    int state = digitalRead(sensor);
-    if(state == HIGH && lastState == LOW){
-      pulseSensor ++;
-    }
-    lastState = state;
-    if (pulseSensor > 0){
+
+    if(pulseSensor > 0)
+    {
       pulseAcumSensor += pulseSensor;
-      pulseSensor = 0;       
-      qlitros = ((pulseAcumSensor * 100)/ product);
-      lcd.setCursor(7,2);
-      lcd.print(qlitros);
+      pulseSensor = 0;
+      //TODO: Despacho: Integrar condiciones pada deteccion de flujo correcto de producto
     }
-    */
-    if(tiempoExcedido == true){
-      pulseAcumSensor = product;
+   
+    if(tiempoExcedido == true)
+    {
+      // pulseAcumSensor = product;
       tiempoExcedido = false;
+      Serial.println("Despacho - paro: tiempo exedido"); // HACK: Log: paro por tiempo excedido
+      break;
     }
   }
-  digitalWrite(ReleProducto, LOW);  
+
+  digitalWrite(ReleProducto, LOW);
   CreditAcum -= precio;    
   lcd.clear();
   EnjuagueFirst = true;
@@ -398,5 +420,9 @@ void producto () {
   pulseCoin = 0;
   pulseBill = 0;
   resetCredit = millis();
+
+  Serial.println("Despacho - Finalizado");
+  Serial.println("Despacho - pulsos/porcentaje despachados: " + String(pulseAcumSensor) + " / " + String(qlitros)); // HACK: Log: pulsos/porcentaje despachado
+  Serial.println("Despacho - credit acum: " + String(CreditAcum));
 }
  

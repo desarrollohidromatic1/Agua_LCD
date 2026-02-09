@@ -173,9 +173,10 @@ void calibration () {
               if (pulseSensor > 0){
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
-                qlitros = ((pulseAcumSensor * 100)/ producto1);
+                // qlitros = ((pulseAcumSensor * 100)/ producto1);
                 lcd.setCursor(10,3);
                 lcd.print(pulseAcumSensor);  
+                //TODO: Calibracion: Producto 1: Integrar condiciones pada calibracion de flujo de producto
               }
 
               if(tiempoExcedido == true){
@@ -197,6 +198,7 @@ void calibration () {
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(4, producto1);
               EEPROM.commit();
+              //TODO: Calibracion: Producto 1: Integrar almacenamiento de umbral de flujo del producto
               moodProducto1 = false;
               delay(100);
               lcd.clear();
@@ -255,10 +257,11 @@ void calibration () {
               if (pulseSensor > 0){
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
-                qlitros = ((pulseAcumSensor * 100)/ producto2);
+                // qlitros = ((pulseAcumSensor * 100)/ producto2);
                 lcd.setCursor(10,3);
                 lcd.print(pulseAcumSensor);  
                // Serial.print("Pulsos:"); Serial.println(pulseAcumSensor);
+               //TODO: Calibracion: Producto 2: Integrar condiciones pada calibracion de flujo de producto
               }
 
               if(tiempoExcedido == true){
@@ -283,6 +286,7 @@ void calibration () {
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(8, producto2);
               EEPROM.commit();
+              //TODO: Calibracion: Producto 2: Integrar almacenamiento de umbral de flujo del producto
               moodProducto2 = false;
               delay(100);
               lcd.clear();
@@ -342,9 +346,10 @@ void calibration () {
               if (pulseSensor > 0){
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
-                qlitros = ((pulseAcumSensor * 100)/ producto3);
+                // qlitros = ((pulseAcumSensor * 100)/ producto3);
                 lcd.setCursor(10,3);
                 lcd.print(pulseAcumSensor);  
+                //TODO: Calibracion: Producto 3: Integrar condiciones pada calibracion de flujo de producto
               }
 
               if(tiempoExcedido == true){
@@ -366,6 +371,7 @@ void calibration () {
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(12, producto3);
               EEPROM.commit();
+              //TODO: Calibracion: Producto 3: Integrar almacenamiento de umbral de flujo del producto
               moodProducto3 = false;
               delay(100);
               lcd.clear();

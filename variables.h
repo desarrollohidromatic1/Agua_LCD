@@ -56,14 +56,14 @@ bool recoja = false;
 
 // Sensor de flujo
 const byte sensor = 2;
-volatile int pulseSensor = 0;
+extern unsigned int pulseSensor = 0;
 unsigned long LastTimeSensor = 0;
 unsigned long pulseAcumSensor = 0;
 
-float producto1 = 1, producto2 = 1, producto3 = 1, product = 1, tiempoEnjuague = 0;
+unsigned int producto1 = 1, producto2 = 1, producto3 = 1, product = 1, tiempoEnjuague = 0;
 unsigned long tiempo = 0, inicio = 0, fin = 0, tiempoParo = 0;
 unsigned long tiempoMuestra = 0;
-unsigned long qlitros = 0;
+unsigned int qlitros = 0;
 int lastState = LOW;
 
 // ====================================================================

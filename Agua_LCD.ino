@@ -37,6 +37,8 @@ void setup() {
   Serial.begin(115200);
   Serial.println("VAP iniciado");
   Serial.println(firmware);
+  Serial.println("Compilcion: " + String(__DATE__) + " " + String(__TIME__));
+
   EEPROM.begin(512);
   setupGeneral();
   if(digitalRead(btReset) == LOW){
@@ -244,7 +246,13 @@ void loop() {
           }
           if (CreditAcum >= priceEnjuague && EnjuagueFirst == true) {
             tiempoEnjuague = EEPROM.readInt(100); 
+
+            Serial.println("Enjuague - tiempo enjuague: " + String(tiempoEnjuague)); // HACK: Log: enjuague iniciado
+
             enjuague();
+
+            Serial.println("Enjuague - Finalizado"); // HACK: Log: enjuague finalizado
+
             pulseCoin = 0;
             pulseBill = 0;
             resetCredit = millis();
@@ -261,12 +269,17 @@ void loop() {
           if(CreditAcum >= price1) {
             producto1 = EEPROM.readInt(4);    
             product = producto1;
+
+            Serial.println("Despacho - producto: " + String(1)); // HACK: Log: despacho producto 1 iniciado
+
             producto();
             
             ventasProducto1 += 1;  
             EEPROM.writeInt(36,ventasProducto1);            
             EEPROM.commit(); 
             yaVendi = true;
+
+            Serial.println("Despacho - ventas producto 1: " + String(ventasProducto1)); // HACK: Log: despacho ventas producto 1
           }
           else {            
             precioMostrar();
@@ -283,12 +296,17 @@ void loop() {
           if(CreditAcum >= price2) {
             producto2 = EEPROM.readInt(8);    
             product = producto2;
+
+            Serial.println("Despacho - producto: " + String(2)); // HACK: Log: despacho producto 2 iniciado
+
             producto();
             
             ventasProducto2 += 1;  
             EEPROM.writeInt(40,ventasProducto2);
             EEPROM.commit();
             yaVendi = true; 
+
+            Serial.println("Despacho - ventas producto 2: " + String(ventasProducto2)); // HACK: Log: despacho ventas producto 2
           }
           else {            
             precioMostrar();
@@ -305,12 +323,17 @@ void loop() {
           if(CreditAcum >= price3) {
             producto3 = EEPROM.readInt(12);    
             product = producto3;
+
+            Serial.println("Despacho - producto: " + String(3)); // HACK: Log: despacho producto 2 iniciado
+
             producto();
             
             ventasProducto3 += 1;  
             EEPROM.writeInt(44,ventasProducto3);
             EEPROM.commit();
             yaVendi = true; 
+
+            Serial.println("Despacho - ventas producto 3: " + String(ventasProducto3)); // HACK: Log: despacho ventas producto 3
           }
           else {            
             precioMostrar();
