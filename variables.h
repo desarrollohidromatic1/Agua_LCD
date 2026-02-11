@@ -7,6 +7,8 @@ bool verdadero = false;
 #define I2C_ADDR 0x27 
 LiquidCrystal_I2C lcd(I2C_ADDR, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
+#define DEBUG_LOG_UART_ENABLED 0
+
 // Botones
 #define bt1 4 // Enjuague
 #define bt2 5 // Producto 1
@@ -65,6 +67,26 @@ unsigned long tiempo = 0, inicio = 0, fin = 0, tiempoParo = 0;
 unsigned long tiempoMuestra = 0;
 unsigned int qlitros = 0;
 int lastState = LOW;
+
+// despacho
+unsigned long despacho_porcentaje_lcd_refresh_time_millis_last = 0;
+unsigned long despacho_porcentaje_lcd_refresh_time_millis_current = 0;
+unsigned long DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL = 50;
+
+unsigned int Despacho_Umbral_Pulsos = 0;
+
+// bool f_despacho_producto_terminado = false;
+unsigned long llenando_deposito_time_millis_last = 0;
+
+// calibracion de flujo
+unsigned long calibracion_pulsos_lcd_refresh_time_millis_last = 0;
+unsigned long calibracion_pulsos_lcd_refresh_time_millis_current = 0;
+unsigned long CALIBRACION_PULSOS_LCD_REFRESH_INTERVAL = 20;
+
+unsigned long time_U_begin_calibracion = 0;
+unsigned long time_U_end_calibracion = 0;
+unsigned long time_U_total_calibracion = 0;
+uint16_t Umbral_Pulsos_calibracion = 0;
 
 // ====================================================================
 

@@ -135,7 +135,7 @@ void loop() {
       creditTime = millis();
       resetCredit = millis();
     }    
-  }  
+  }
 
   // Billetero
   unsigned long lastTimeBill = millis() - millisUltBill;
@@ -236,23 +236,16 @@ void loop() {
       }
 
       // Enjuague
-      if( digitalRead(bt1) == LOW) {
+      if ( digitalRead(bt1) == LOW) {
         delay(100);
         if (digitalRead(bt1) == LOW) {
-          
           if(CreditAcum < priceEnjuague) {
             precio = priceEnjuague; 
             precioMostrar();
           }
           if (CreditAcum >= priceEnjuague && EnjuagueFirst == true) {
             tiempoEnjuague = EEPROM.readInt(100); 
-
-            Serial.println("Enjuague - tiempo enjuague: " + String(tiempoEnjuague)); // HACK: Log: enjuague iniciado
-
             enjuague();
-
-            Serial.println("Enjuague - Finalizado"); // HACK: Log: enjuague finalizado
-
             pulseCoin = 0;
             pulseBill = 0;
             resetCredit = millis();
@@ -267,19 +260,14 @@ void loop() {
           contadorParo=1;
           precio = price1;
           if(CreditAcum >= price1) {
-            producto1 = EEPROM.readInt(4);    
+            producto1 = EEPROM.readInt(4);
+            Despacho_Umbral_Pulsos = EEPROM.readUInt(52);
             product = producto1;
-
-            Serial.println("Despacho - producto: " + String(1)); // HACK: Log: despacho producto 1 iniciado
-
             producto();
-            
             ventasProducto1 += 1;  
             EEPROM.writeInt(36,ventasProducto1);            
             EEPROM.commit(); 
             yaVendi = true;
-
-            Serial.println("Despacho - ventas producto 1: " + String(ventasProducto1)); // HACK: Log: despacho ventas producto 1
           }
           else {            
             precioMostrar();
@@ -294,19 +282,14 @@ void loop() {
           contadorParo=1;
           precio = price2;
           if(CreditAcum >= price2) {
-            producto2 = EEPROM.readInt(8);    
+            producto2 = EEPROM.readInt(8);
+            Despacho_Umbral_Pulsos = EEPROM.readUInt(56);
             product = producto2;
-
-            Serial.println("Despacho - producto: " + String(2)); // HACK: Log: despacho producto 2 iniciado
-
             producto();
-            
             ventasProducto2 += 1;  
             EEPROM.writeInt(40,ventasProducto2);
             EEPROM.commit();
             yaVendi = true; 
-
-            Serial.println("Despacho - ventas producto 2: " + String(ventasProducto2)); // HACK: Log: despacho ventas producto 2
           }
           else {            
             precioMostrar();
@@ -321,25 +304,30 @@ void loop() {
           contadorParo=1;
           precio = price3;
           if(CreditAcum >= price3) {
-            producto3 = EEPROM.readInt(12);    
+            producto3 = EEPROM.readInt(12);
+            Despacho_Umbral_Pulsos = EEPROM.readUInt(60);
             product = producto3;
-
-            Serial.println("Despacho - producto: " + String(3)); // HACK: Log: despacho producto 2 iniciado
-
             producto();
-            
             ventasProducto3 += 1;  
             EEPROM.writeInt(44,ventasProducto3);
             EEPROM.commit();
             yaVendi = true; 
-
-            Serial.println("Despacho - ventas producto 3: " + String(ventasProducto3)); // HACK: Log: despacho ventas producto 3
           }
           else {            
             precioMostrar();
-          }                
+          }               
         }
       }
     }
   }
+
+  // if (f_despacho_producto_terminado == true)
+  // {
+  //   if((millis() - llenando_deposito_time_millis_last) > (60000))
+  //   {
+  //     llenando_deposito_time_millis_last = millis();
+  //     f_despacho_producto_terminado = false;
+  //   }
+  // }
+
 }

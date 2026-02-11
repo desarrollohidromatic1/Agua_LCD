@@ -1,10 +1,13 @@
-void coinInterrupt() {    
+void coinInterrupt() {
   unsigned long lastTimeCoin = millis() - millisUltCoin;
   if(lastTimeCoin > 50){
-    pulseCoin ++;    
+    delayMicroseconds(200);
+    if(digitalRead(interruptCoin) == LOW){
+      pulseCoin ++;    
+    }
   }
   
-   millisUltCoin = millis(); 
+   millisUltCoin = millis();
 }
 /*
 void billInterrupt() { 
@@ -18,7 +21,10 @@ void billInterrupt() {
   unsigned long currentTime = millis();
   
   if (currentTime - lastInterruptTime > DEBOUNCE_TIME) {
-    pulseBill++;
+    delayMicroseconds(200);
+    if(digitalRead(interruptBill) == LOW){
+      pulseBill++;
+    }
   }
   lastInterruptTime = currentTime;
 }
@@ -79,13 +85,19 @@ void firstTime () {
   EEPROM.writeInt(100, tiempoEnjuague);
   EEPROM.commit();  
   producto1 = 1;
+  Umbral_Pulsos_calibracion = 1;
   EEPROM.writeInt(4, producto1);
+  EEPROM.writeUInt(52, Umbral_Pulsos_calibracion);
   EEPROM.commit();  
   producto2 = 1;
+  Umbral_Pulsos_calibracion = 1;
   EEPROM.writeInt(8, producto2);
+  EEPROM.writeUInt(56, Umbral_Pulsos_calibracion);
   EEPROM.commit();
   producto3 = 1;
+  Umbral_Pulsos_calibracion = 1;
   EEPROM.writeInt(12, producto3);
+  EEPROM.writeUInt(60, Umbral_Pulsos_calibracion);
   EEPROM.commit();  
   priceEnjuague = 0;
   EEPROM.writeInt(16, priceEnjuague);
@@ -110,7 +122,7 @@ void firstTime () {
   EEPROM.commit(); 
   hopper2 = 0;
   EEPROM.writeInt(48, hopper2);
-  EEPROM.commit(); 
+  EEPROM.commit();
   feriar = 1;
   EEPROM.writeInt(250, feriar);
   EEPROM.commit();

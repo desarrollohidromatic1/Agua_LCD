@@ -81,7 +81,7 @@ void saldo () {
   }
   
   unsigned long timeReset = millis() - resetCredit;
-  if(timeReset > 300000){
+  if(timeReset > 300000){ // 5 minnutos
     CreditAcum = 0;
     lcd.clear();
     clearCoin = true;
@@ -340,17 +340,30 @@ void paro () {
   lcd.print("%");
 }
 void producto () { // NOTE: Despacho: despacho de producto
-
-  unsigned long despacho_porsentaje_lcd_refresh_time_millis_last = 0;
-  unsigned long despacho_porsentaje_lcd_refresh_time_millis_current = 0;
-  unsigned long DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL = 50;
+  unsigned long Umbral_pulsos_verify_time_last = 0;
+  unsigned long Umbral_pulsos_verify_time_current = 0;
+  unsigned long UMBRAL_PULSOS_VERIFY_INTERVAL = 2000;
+  unsigned int pulsos_Compara = 0;
+  unsigned int error_umbral_index = 0;
+  bool f_error_de_flujo = false;
+  uint8_t PULSOS_UMBRAL_INTERVALO_TOLERANCIA = 4;
+  uint8_t PULSOS_UMBRAL_LIMITE_ERRORES = 3;
   
   pulseSensor = 0;
   pulseAcumSensor = 0;
-  
+
+#if DEBUG_LOG_UART_ENABLED == 1
+  Serial.println("Despacho - INICIADO "); // HACK: Log: despacho de producto iniciado
   Serial.println("Despacho - precio: " + String(precio));
   Serial.println("Despacho - credit acum: " + String(CreditAcum));
   Serial.println("Despacho - pulsos calibracion: " + String(product));
+  Serial.println("Despacho - umbral pulsos: " + String(Despacho_Umbral_Pulsos));
+#endif
+
+  if (Despacho_Umbral_Pulsos > PULSOS_UMBRAL_INTERVALO_TOLERANCIA)
+  {
+    Despacho_Umbral_Pulsos -= PULSOS_UMBRAL_INTERVALO_TOLERANCIA;
+  }
 
   lcd.clear();
   lcd.setCursor(0,0);
@@ -358,7 +371,8 @@ void producto () { // NOTE: Despacho: despacho de producto
   lcd.setCursor(5,2);
   lcd.print("%");
 
-  despacho_porsentaje_lcd_refresh_time_millis_last = millis();
+  despacho_porcentaje_lcd_refresh_time_millis_last = millis();
+  Umbral_pulsos_verify_time_last = millis();
   digitalWrite(ReleProducto, HIGH);
   while(pulseAcumSensor < product)
   {
@@ -367,62 +381,132 @@ void producto () { // NOTE: Despacho: despacho de producto
       delay(100);
       if(digitalRead(bt1) == LOW)
       {
-        // delay(100);
-        // if(digitalRead(bt1) == HIGH)
-        // {
           if(contadorParo<=2)
           {
-            Serial.println("Despacho - Paro: activado por usuario"); // HACK: Log: paro activado por usuario
-            Serial.println("Despacho - Paro: contadorparo inicial: " + String(contadorParo));
-            Serial.println("Despacho - Paro: Tiempo restante inicial: " + String(tiempoParo) + " millisegundos");
             paro();
             contadorParo++;
-            Serial.println("Despacho - Paro: desactivado"); // HACK: Log: paro desactivado por usuario
-            Serial.println("Despacho - Paro: Tiempo restante final: " + String(tiempoParo) + " millisegundos");
-            Serial.println("Despacho - Paro: contadorparo final: " + String(contadorParo));
           }
-        // }
       }
-    }
-    
-    despacho_porsentaje_lcd_refresh_time_millis_current = millis();
-    if(despacho_porsentaje_lcd_refresh_time_millis_current - despacho_porsentaje_lcd_refresh_time_millis_last >= DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL)
-    {
-      despacho_porsentaje_lcd_refresh_time_millis_last = despacho_porsentaje_lcd_refresh_time_millis_current;
-      
-      qlitros = (unsigned int)((pulseAcumSensor * 100.0)/ product);
-      lcd.setCursor(7,2);
-      lcd.print(qlitros);
-      Serial.println("Despacho - pulsos/porcentaje: " + String(pulseAcumSensor) + " / " + String(qlitros)); // HACK: Log: porcentaje/porcentaje despachado
     }
 
     if(pulseSensor > 0)
     {
       pulseAcumSensor += pulseSensor;
-      pulseSensor = 0;
-      //TODO: Despacho: Integrar condiciones pada deteccion de flujo correcto de producto
+      pulsos_Compara += pulseSensor; 
+      pulseSensor = 0;     
+    }
+
+    qlitros = (unsigned int)((pulseAcumSensor * 100.0)/ product);
+
+    despacho_porcentaje_lcd_refresh_time_millis_current = millis();
+    if(despacho_porcentaje_lcd_refresh_time_millis_current - despacho_porcentaje_lcd_refresh_time_millis_last >= DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL)
+    {
+      despacho_porcentaje_lcd_refresh_time_millis_last = despacho_porcentaje_lcd_refresh_time_millis_current;
+            
+      lcd.setCursor(7,2);
+      lcd.print(qlitros);
+#if DEBUG_LOG_UART_ENABLED == 1
+      // Serial.println("Despacho - pulsos/porcentaje: " + String(pulseAcumSensor) + " / " + String(qlitros)); // HACK: Log: porcentaje/porcentaje despachado
+#endif
+    }
+
+    //TODO: Despacho: Integrar condiciones pada deteccion de flujo correcto de producto
+    Umbral_pulsos_verify_time_current = millis();
+    if ((Umbral_pulsos_verify_time_current - Umbral_pulsos_verify_time_last) > UMBRAL_PULSOS_VERIFY_INTERVAL)
+    {
+      Umbral_pulsos_verify_time_last = Umbral_pulsos_verify_time_current;
+
+      if (pulsos_Compara < Despacho_Umbral_Pulsos)
+      {
+        error_umbral_index += 1;
+
+#if DEBUG_LOG_UART_ENABLED == 1
+        Serial.print("Despacho pulsos - error_umbral_index: "); // HACK: log: despacho pulsos: umbral error index
+        Serial.print(error_umbral_index);
+        Serial.print(" / ");
+        Serial.println(PULSOS_UMBRAL_LIMITE_ERRORES);
+
+        Serial.print("Despacho pulsos - insuficientes pulsos_check/umbral: ");
+        Serial.print(pulsos_Compara);
+        Serial.print(" / ");
+        Serial.println(Despacho_Umbral_Pulsos);
+
+        Serial.print("Despacho pulsos - pulsos/porcentaje: ");
+        Serial.print(pulseAcumSensor);
+        Serial.print(" / ");
+        Serial.println(qlitros);
+#endif
+
+        pulseAcumSensor -= (pulsos_Compara);
+
+        if (error_umbral_index == PULSOS_UMBRAL_LIMITE_ERRORES)
+        {
+          // detiene el despacho por error de flujo
+          f_error_de_flujo = true;
+#if DEBUG_LOG_UART_ENABLED == 1
+          Serial.print("Despacho pulsos - f_error_de_flujo: "); // HACK: log: despacho pulsos: f_error_de_flujo
+          Serial.println(f_error_de_flujo);
+#endif
+          break;
+        }
+      }
+      else
+      {
+        error_umbral_index = 0;
+      }
+
+      pulsos_Compara = 0;
     }
    
     if(tiempoExcedido == true)
     {
       // pulseAcumSensor = product;
       tiempoExcedido = false;
-      Serial.println("Despacho - paro: tiempo exedido"); // HACK: Log: paro por tiempo excedido
       break;
     }
   }
 
   digitalWrite(ReleProducto, LOW);
-  CreditAcum -= precio;    
+  // CreditAcum -= precio;
+  if (qlitros < 100)
+  {
+    unsigned int rest_prod = (qlitros * precio) / 100;
+    CreditAcum -= rest_prod;
+  }
+  else
+  {
+    CreditAcum -= precio;
+  }
+
   lcd.clear();
   EnjuagueFirst = true;
-  clearCoin = true;   
-  pulseCoin = 0;
-  pulseBill = 0;
+  clearCoin = true; //REVIEW: creditos: ¿resetear creditos acumulados en el monedero al finalizar el despacho?
+  // pulseCoin = 0;
+  // pulseBill = 0; 
   resetCredit = millis();
 
-  Serial.println("Despacho - Finalizado");
+  if(f_error_de_flujo)
+  {
+    // f_despacho_producto_terminado = true;
+    lcd.setCursor(2,1);
+    lcd.print("Producto agotado");
+    llenando_deposito_time_millis_last = millis();
+  }
+  else
+  {
+    lcd.setCursor(3,1);
+    lcd.print("Gracias por su");
+    lcd.setCursor(6,2);
+    lcd.print("compra!");
+  }
+
+#if DEBUG_LOG_UART_ENABLED == 1
+  Serial.println("Despacho - FINALIZADO");
   Serial.println("Despacho - pulsos/porcentaje despachados: " + String(pulseAcumSensor) + " / " + String(qlitros)); // HACK: Log: pulsos/porcentaje despachado
   Serial.println("Despacho - credit acum: " + String(CreditAcum));
+#endif
+
+  delay(2000);
+  lcd.clear();
 }
  

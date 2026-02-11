@@ -147,7 +147,7 @@ void calibration () {
         lcd.print(producto1);      
         lcd.setCursor(0,3);
         lcd.print("Pulsos 2:");   
-        moodProducto1 = true;           
+        moodProducto1 = true;
         delay(500);
         while(moodProducto1 == true){
           if ( digitalRead(bt2) == LOW ){     
@@ -155,6 +155,7 @@ void calibration () {
             if ( digitalRead(bt2) == LOW ){                           
             pulseSensor = 0;
             pulseAcumSensor = 0;
+            time_U_begin_calibracion = millis();            
             digitalWrite(ReleProducto, HIGH);
             while ( digitalRead(bt2) == LOW ){ 
               if(digitalRead(bt1) == LOW){
@@ -174,31 +175,61 @@ void calibration () {
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
                 // qlitros = ((pulseAcumSensor * 100)/ producto1);
+              }
+
+              calibracion_pulsos_lcd_refresh_time_millis_current = millis();
+              if(calibracion_pulsos_lcd_refresh_time_millis_current - calibracion_pulsos_lcd_refresh_time_millis_last >= CALIBRACION_PULSOS_LCD_REFRESH_INTERVAL)
+              {
+                calibracion_pulsos_lcd_refresh_time_millis_last = calibracion_pulsos_lcd_refresh_time_millis_current;            
                 lcd.setCursor(10,3);
-                lcd.print(pulseAcumSensor);  
-                //TODO: Calibracion: Producto 1: Integrar condiciones pada calibracion de flujo de producto
+                lcd.print(pulseAcumSensor);
               }
 
               if(tiempoExcedido == true){
                 pulseAcumSensor = producto1;
                 tiempoExcedido = false;
-              }   
+              }
               producto1 = pulseAcumSensor;             
             }
             }
-            digitalWrite(ReleProducto, LOW);          
-            
+            digitalWrite(ReleProducto, LOW);
+            time_U_end_calibracion = millis(); // tiempo total de calibracion         
+            time_U_total_calibracion = time_U_end_calibracion - time_U_begin_calibracion;
+            time_U_total_calibracion = time_U_total_calibracion / 1000; // convierte a segundos
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - pulsos: "); // HACK: log: calibracion sensor: pulsos
+              Serial.println(pulseAcumSensor);
+              Serial.print("Calibracion sensor - tiempo (s): "); // HACK: log: calibracion sensor: tiempo
+              Serial.println(time_U_total_calibracion);
+#endif
+
             if (producto1 < 1){
               producto1 = 1;
-            }                    
-          }                    
+            } 
+
+              Umbral_Pulsos_calibracion = 0; // umbral de pulsos por segundo
+              if (time_U_total_calibracion > 0)
+              {
+                Umbral_Pulsos_calibracion = (uint16_t)(producto1 / time_U_total_calibracion); // calcula el umbral de pulsos por segundo
+              }
+              else
+              {
+                Umbral_Pulsos_calibracion = producto1; // si el tiempo es 0 segundos, asigna el valor de pulsos directamente
+              }
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - Umbral_Pulsos: "); // HACK: log: calibracion sensor: umbral
+              Serial.println(Umbral_Pulsos_calibracion);
+#endif
+          }
           // GUARDAR Y SALIR
           if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(4, producto1);
+              EEPROM.writeUInt(52, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 1: almacenamiento de umbral de flujo
               EEPROM.commit();
-              //TODO: Calibracion: Producto 1: Integrar almacenamiento de umbral de flujo del producto
               moodProducto1 = false;
               delay(100);
               lcd.clear();
@@ -239,6 +270,7 @@ void calibration () {
             if ( digitalRead(bt3) == LOW ) {                          
             pulseSensor = 0;
             pulseAcumSensor = 0;
+            time_U_begin_calibracion = millis(); 
             digitalWrite(ReleProducto, HIGH);
             while ( digitalRead(bt3) == LOW ){ 
               if(digitalRead(bt1) == LOW){
@@ -258,10 +290,14 @@ void calibration () {
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
                 // qlitros = ((pulseAcumSensor * 100)/ producto2);
+              }
+
+              calibracion_pulsos_lcd_refresh_time_millis_current = millis();
+              if(calibracion_pulsos_lcd_refresh_time_millis_current - calibracion_pulsos_lcd_refresh_time_millis_last >= CALIBRACION_PULSOS_LCD_REFRESH_INTERVAL)
+              {
+                calibracion_pulsos_lcd_refresh_time_millis_last = calibracion_pulsos_lcd_refresh_time_millis_current;            
                 lcd.setCursor(10,3);
-                lcd.print(pulseAcumSensor);  
-               // Serial.print("Pulsos:"); Serial.println(pulseAcumSensor);
-               //TODO: Calibracion: Producto 2: Integrar condiciones pada calibracion de flujo de producto
+                lcd.print(pulseAcumSensor);
               }
 
               if(tiempoExcedido == true){
@@ -271,22 +307,46 @@ void calibration () {
               producto2 = pulseAcumSensor;          
             }
           }
-           // Serial.print("Pulsos producto 2:"); Serial.println(producto2);
-            digitalWrite(ReleProducto, LOW);          
-             
+            digitalWrite(ReleProducto, LOW);      
+            time_U_end_calibracion = millis(); // tiempo total de calibracion         
+            time_U_total_calibracion = time_U_end_calibracion - time_U_begin_calibracion;
+            time_U_total_calibracion = time_U_total_calibracion / 1000; // convierte a segundos
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - pulsos: "); // HACK: log: calibracion sensor: pulsos
+              Serial.println(pulseAcumSensor);
+              Serial.print("Calibracion sensor - tiempo (s): "); // HACK: log: calibracion sensor: tiempo
+              Serial.println(time_U_total_calibracion);
+#endif
+
             /* 
             if (producto2 < 1){
               producto2 = 1;
             } 
-            */                   
-          }                    
+            */       
+           
+              Umbral_Pulsos_calibracion = 0; // umbral de pulsos por segundo
+              if (time_U_total_calibracion > 0)
+              {
+                Umbral_Pulsos_calibracion = (uint16_t)(producto2 / time_U_total_calibracion); // calcula el umbral de pulsos por segundo
+              }
+              else
+              {
+                Umbral_Pulsos_calibracion = producto2; // si el tiempo es 0 segundos, asigna el valor de pulsos directamente
+              }
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - Umbral_Pulsos: "); // HACK: log: calibracion sensor: umbral
+              Serial.println(Umbral_Pulsos_calibracion);
+#endif
+          }
           // GUARDAR Y SALIR
           if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(8, producto2);
+              EEPROM.writeUInt(56, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 2: almacenamiento de umbral de flujo
               EEPROM.commit();
-              //TODO: Calibracion: Producto 2: Integrar almacenamiento de umbral de flujo del producto
               moodProducto2 = false;
               delay(100);
               lcd.clear();
@@ -297,7 +357,6 @@ void calibration () {
               lcd.setCursor(8,2);
               lcd.print(producto2);
               delay(500);
-             // Serial.print("Guardado:"); Serial.println(producto2);
             }
           }
         }        
@@ -328,6 +387,7 @@ void calibration () {
             if ( digitalRead(bt4) == LOW ) {                         
             pulseSensor = 0;
             pulseAcumSensor = 0;
+            time_U_begin_calibracion = millis();  
             digitalWrite(ReleProducto, HIGH);
             while ( digitalRead(bt4) == LOW ){ 
               if(digitalRead(bt1) == LOW){
@@ -335,7 +395,7 @@ void calibration () {
                 if(digitalRead(bt1) == LOW){ 
                   paro();
                 }
-              }                
+              }
               /*           
               int state = digitalRead(sensor);
               if(state == HIGH && lastState == LOW){
@@ -347,9 +407,14 @@ void calibration () {
                 pulseAcumSensor += pulseSensor;
                 pulseSensor = 0;
                 // qlitros = ((pulseAcumSensor * 100)/ producto3);
+              }
+
+              calibracion_pulsos_lcd_refresh_time_millis_current = millis();
+              if(calibracion_pulsos_lcd_refresh_time_millis_current - calibracion_pulsos_lcd_refresh_time_millis_last >= CALIBRACION_PULSOS_LCD_REFRESH_INTERVAL)
+              {
+                calibracion_pulsos_lcd_refresh_time_millis_last = calibracion_pulsos_lcd_refresh_time_millis_current;            
                 lcd.setCursor(10,3);
-                lcd.print(pulseAcumSensor);  
-                //TODO: Calibracion: Producto 3: Integrar condiciones pada calibracion de flujo de producto
+                lcd.print(pulseAcumSensor);
               }
 
               if(tiempoExcedido == true){
@@ -360,18 +425,44 @@ void calibration () {
             }
           }
             digitalWrite(ReleProducto, LOW);          
-            producto3 = pulseAcumSensor;    
+            // producto3 = pulseAcumSensor;
+            time_U_end_calibracion = millis(); // tiempo total de calibracion         
+            time_U_total_calibracion = time_U_end_calibracion - time_U_begin_calibracion;
+            time_U_total_calibracion = time_U_total_calibracion / 1000; // convierte a segundos
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - pulsos: "); // HACK: log: calibracion sensor: pulsos
+              Serial.println(pulseAcumSensor);
+              Serial.print("Calibracion sensor - tiempo (s): "); // HACK: log: calibracion sensor: tiempo
+              Serial.println(time_U_total_calibracion);
+#endif
+
             if (producto3 < 1){
               producto3 = 1;
-            }                    
+            }
+            
+              Umbral_Pulsos_calibracion = 0; // umbral de pulsos por segundo
+              if (time_U_total_calibracion > 0)
+              {
+                Umbral_Pulsos_calibracion = (uint16_t)(producto3 / time_U_total_calibracion); // calcula el umbral de pulsos por segundo
+              }
+              else
+              {
+                Umbral_Pulsos_calibracion = producto3; // si el tiempo es 0 segundos, asigna el valor de pulsos directamente
+              }
+
+#if DEBUG_LOG_UART_ENABLED == 1
+              Serial.print("Calibracion sensor - Umbral_Pulsos: "); // HACK: log: calibracion sensor: umbral
+              Serial.println(Umbral_Pulsos_calibracion);
+#endif    
           }                    
           // GUARDAR Y SALIR
           if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(12, producto3);
+              EEPROM.writeUInt(60, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 3: almacenamiento de umbral de flujo
               EEPROM.commit();
-              //TODO: Calibracion: Producto 3: Integrar almacenamiento de umbral de flujo del producto
               moodProducto3 = false;
               delay(100);
               lcd.clear();
