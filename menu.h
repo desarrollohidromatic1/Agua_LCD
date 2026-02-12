@@ -228,7 +228,7 @@ void calibration () {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(4, producto1);
-              EEPROM.writeUInt(52, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 1: almacenamiento de umbral de flujo
+              EEPROM.writeUInt(52, Umbral_Pulsos_calibracion);
               EEPROM.commit();
               moodProducto1 = false;
               delay(100);
@@ -345,7 +345,7 @@ void calibration () {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(8, producto2);
-              EEPROM.writeUInt(56, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 2: almacenamiento de umbral de flujo
+              EEPROM.writeUInt(56, Umbral_Pulsos_calibracion);
               EEPROM.commit();
               moodProducto2 = false;
               delay(100);
@@ -461,7 +461,7 @@ void calibration () {
             delay(100);
             if(digitalRead(bt1) == LOW || digitalRead(bt6) == LOW) {
               EEPROM.writeInt(12, producto3);
-              EEPROM.writeUInt(60, Umbral_Pulsos_calibracion); //REVIEW: Calibracion: Producto 3: almacenamiento de umbral de flujo
+              EEPROM.writeUInt(60, Umbral_Pulsos_calibracion);
               EEPROM.commit();
               moodProducto3 = false;
               delay(100);

@@ -410,7 +410,6 @@ void producto () { // NOTE: Despacho: despacho de producto
 #endif
     }
 
-    //TODO: Despacho: Integrar condiciones pada deteccion de flujo correcto de producto
     Umbral_pulsos_verify_time_current = millis();
     if ((Umbral_pulsos_verify_time_current - Umbral_pulsos_verify_time_last) > UMBRAL_PULSOS_VERIFY_INTERVAL)
     {

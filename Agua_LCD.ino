@@ -26,7 +26,7 @@ Se agrega detecccion de fujo de producto y cobro proporcional a la cantidad desp
 
 */
 
-#define firmware "1.9"
+#define firmware "1.10"
 
 #include <EEPROM.h>
 #include <LCD.h>
@@ -125,24 +125,25 @@ void loop() {
   }
 
   // Monedero  
-  if(pulseCoin > 0) {
-    delay(90);
-    if(pulseCoin > 2){
-      pulseCoin = 0;
-      antiJammer();
-    }
-    else{
+  if(pulseCoin > 0) { // REVIEW: procesamiento de incercion de monedas
+    // delay(90);
+    // if(pulseCoin > 2){
+    //   pulseCoin = 0;
+    //   antiJammer();
+    // }
+    // else
+    // {
       pulseCoinAcum = pulseCoin;
       pulseCoin = 0;
       CreditAcum += pulseCoinAcum;    
       creditTime = millis();
       resetCredit = millis();
-    }    
+    // }    
   }
 
   // Billetero
   unsigned long lastTimeBill = millis() - millisUltBill;
-  if(pulseBill > 0 && lastTimeBill > 300){      
+  if(pulseBill > 0 && lastTimeBill > 300){ // REVIEW: procesamiento de incercion de billetes
     if(pulseBill > 2){
       pulseBill = 0;
     }
