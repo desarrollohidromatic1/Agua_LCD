@@ -21,6 +21,9 @@ Se arregla el bug que permitia despachar presionando el boton de cambio
 1.8
 Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
 
+1.9
+Se agrega detecccion de fujo de producto y cobro proporcional a la cantidad despachada y solucion al bug de creditos dummy generados al des/energizar los sistemas de credido (monedero y billetero)
+
 */
 
 #define firmware "1.9"
