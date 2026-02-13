@@ -24,6 +24,9 @@ Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
 1.9
 Se agrega detecccion de fujo de producto y cobro proporcional a la cantidad despachada y solucion al bug de creditos dummy generados al des/energizar los sistemas de credido (monedero y billetero)
 
+1.10
+Se agrega mensaje de "llenando deposito", se arreglo la aceptacion de creditos durante el despacho
+
 */
 
 #define firmware "1.10"
@@ -290,7 +293,7 @@ void loop() {
 
   if (f_despacho_producto_terminado == true)
   {
-    if((millis() - llenando_deposito_time_millis_last) > (180000)) //TODO: configurar tiempo de llenado de deposito, desde menu (3 min default)
+    if((millis() - llenando_deposito_time_millis_last) > (180000)) // (3 min default)
     {
       llenando_deposito_time_millis_last = millis();
       f_despacho_producto_terminado = false;
