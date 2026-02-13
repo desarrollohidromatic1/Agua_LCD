@@ -1,4 +1,5 @@
-void coinInterrupt() {
+void coinInterrupt() 
+{
   unsigned long lastTimeCoin = millis() - millisUltCoin;
   if(lastTimeCoin > 50){
     delayMicroseconds(200);
@@ -9,31 +10,27 @@ void coinInterrupt() {
   
    millisUltCoin = millis();
 }
-/*
-void billInterrupt() { 
-  //pulseBill ++;  
-  pulseBill ++;           
- 
-}*/
 
-void billInterrupt() {
-  static unsigned long lastInterruptTime = 0;
-  unsigned long currentTime = millis();
-  
-  if (currentTime - lastInterruptTime > DEBOUNCE_TIME) {
+void billInterrupt() 
+{
+  unsigned long lastTimeBill = millis() - millisUltBill;
+
+  if (lastTimeBill > 50) {
     delayMicroseconds(200);
     if(digitalRead(interruptBill) == LOW){
       pulseBill++;
     }
   }
-  lastInterruptTime = currentTime;
+  millisUltBill = millis();
 }
 
-void flujo () {
+void flujo () 
+{
   pulseSensor = 1;
 }
-void setupGeneral () {
 
+void setupGeneral () 
+{
   lcd.begin (20,4);
   lcd.setBacklightPin(3,POSITIVE);
   lcd.setBacklight(HIGH);  

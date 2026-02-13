@@ -117,7 +117,7 @@ void setup() {
 }
 
 void loop() {
-  readMenu();  
+  readMenu();
   if ( CreditAcum == 0) {
     cero ();
     yaVendi=false;
@@ -125,67 +125,29 @@ void loop() {
   }
 
   // Monedero  
-  if(pulseCoin > 0) { // REVIEW: procesamiento de incercion de monedas
-    // delay(90);
-    // if(pulseCoin > 2){
-    //   pulseCoin = 0;
-    //   antiJammer();
-    // }
-    // else
-    // {
-      pulseCoinAcum = pulseCoin;
+  if(pulseCoin > 0)
+  {
+      CreditAcum += pulseCoin;
       pulseCoin = 0;
-      CreditAcum += pulseCoinAcum;    
       creditTime = millis();
       resetCredit = millis();
-    // }    
   }
 
   // Billetero
-  unsigned long lastTimeBill = millis() - millisUltBill;
-  if(pulseBill > 0 && lastTimeBill > 300){ // REVIEW: procesamiento de incercion de billetes
-    if(pulseBill > 2){
-      pulseBill = 0;
-    }
-    pulseBillAcum = pulseBill * 10;     
-    CreditAcum += pulseBillAcum;
+  if(pulseBill > 0)
+  {
+    CreditAcum += (pulseBill * 10);
+    pulseBill = 0;
     creditTime = millis();
-    resetCredit = millis();        
-    pulseBill = 0;
-    millisUltBill = millis();
+    resetCredit = millis();
   }
-  else{
-    pulseBill = 0;
-  }
-  
-  /*
-  // Billetero
-  unsigned long lastTimeBill = millis() - millisUltBill;
-  if (pulseBill > 0 && lastTimeBill > 100){           
-    /*if(pulseBill == 1){
-      pulseBill = 0;
-    }
-    /*
-    delay(100);
-    if(pulseBill > 2){
-      pulseBill = 0;
-      antiJammer();
-    }
-    //else{
-      pulseBillAcum = pulseBill * 10;
-      pulseBill = 0;
-      CreditAcum += pulseBillAcum;
-      creditTime = millis();
-      resetCredit = millis();      
-   // }    
-  }
-  else{
-    pulseBill = 0;
-  }*/
-  if( CreditAcum > 0 ) {
+
+  if( CreditAcum > 0 )
+  {
     saldo ();
+
     unsigned long debouncePulse = millis() - creditTime;
-    if ( debouncePulse > timeWait ) {
+    if ( debouncePulse > 100 ) {
 
       // Cambio
       if ( digitalRead(bt5) == LOW){
@@ -235,9 +197,10 @@ void loop() {
               resetCredit = millis();
             }
           }
-
         }
       }
+  //   }
+  // }
 
       // Enjuague
       if ( digitalRead(bt1) == LOW) {
@@ -297,7 +260,7 @@ void loop() {
           }
           else {            
             precioMostrar();
-          }                
+          }              
         }
       }
 
@@ -325,13 +288,13 @@ void loop() {
     }
   }
 
-  // if (f_despacho_producto_terminado == true)
-  // {
-  //   if((millis() - llenando_deposito_time_millis_last) > (60000))
-  //   {
-  //     llenando_deposito_time_millis_last = millis();
-  //     f_despacho_producto_terminado = false;
-  //   }
-  // }
+  if (f_despacho_producto_terminado == true)
+  {
+    if((millis() - llenando_deposito_time_millis_last) > (180000)) //TODO: configurar tiempo de llenado de deposito, desde menu (3 min default)
+    {
+      llenando_deposito_time_millis_last = millis();
+      f_despacho_producto_terminado = false;
+    }
+  }
 
 }

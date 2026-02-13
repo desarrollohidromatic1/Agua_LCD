@@ -18,56 +18,166 @@ void antiJammer(){
   lcd.clear();
 }
 
-void cero () {
-  
-  if (show == true) {
-    lcd.setCursor(3,0);
-    lcd.write(1);
-    lcd.setCursor(2,1);
-    lcd.write(2);
-    lcd.setCursor(2,2);
-    lcd.write(3);
-    lcd.setCursor(2,3);
-    lcd.write(4);  
-    lcd.setCursor(3,3);
-    lcd.write(5);   
-    lcd.setCursor(4,3);
-    lcd.write(6);  
-    lcd.setCursor(4,2);
-    lcd.write(7);  
-    lcd.setCursor(4,1);
-    lcd.write(8);
-    lcd.setCursor(8,1);
-    lcd.print("BIENVENIDO");
-    lcd.setCursor(8,2);
-    lcd.print("HIDROMATIC");
-    digitalWrite(ReleOzono, LOW);  
+/*=============== mensajes de status de inicio en el lcd ===============*/
+bool isEnabledOptional(lcd_msg_id_t id)
+{
+  switch (id)
+  {
+    case MSG_NO_CAMBIO:
+    {
+      return (!Cambio1);
+    }
+    case MSG_LLENANDO:
+    {
+      return (f_despacho_producto_terminado == true);
+    }
+    default:
+    {
+      return false;
+    }
+  }
+}
+
+// Busca mensaje opcional habilitado en orden (NO incluye Bienvenido)
+lcd_msg_id_t firstEnabledOptional(void)
+{
+  for (int i = 1; i < MSG_COUNT; i++)
+  {
+    if (isEnabledOptional((lcd_msg_id_t)i) == true)
+    {
+      return (lcd_msg_id_t)i;
+    }
+  }
+  return MSG_BIENVENIDO;
+}
+
+lcd_msg_id_t nextEnabledOptionalAfter(lcd_msg_id_t currentOptional)
+{
+  for (int i = ((int)currentOptional + 1); i < MSG_COUNT; i++)
+  {
+    if (isEnabledOptional((lcd_msg_id_t)i) == true)
+    {
+      return (lcd_msg_id_t)i;
+    }
+  }
+  return MSG_BIENVENIDO;
+}
+
+lcd_msg_id_t computeNextMsg(lcd_msg_id_t current)
+{
+  // Si no hay opcionales, siempre Bienvenido
+  if (((isEnabledOptional(MSG_NO_CAMBIO) == false) && (isEnabledOptional(MSG_LLENANDO) == false)) == true)
+  {
+    return MSG_BIENVENIDO;
   }
 
-  if( Cambio1 == false ) {
-    if((millis()-inicio) >= 2000) {
-      if( borrar == true ) {
-        lcd.clear();
-        borrar = false;
-      }
-      lcd.home();
-      lcd.print("*******************");  
+  // Si estamos en Bienvenido, pasamos al primer opcional habilitado
+  if (current == MSG_BIENVENIDO)
+  {
+    return firstEnabledOptional();
+  }
+
+  // Si estamos en un opcional, buscamos el siguiente opcional habilitado;
+  // si no existe, regresamos a Bienvenido
+  return nextEnabledOptionalAfter(current);
+}
+
+void renderBienvenido(void)
+{
+  lcd.setCursor(3,0); lcd.write(1);
+  lcd.setCursor(2,1); lcd.write(2);
+  lcd.setCursor(2,2); lcd.write(3);
+  lcd.setCursor(2,3); lcd.write(4);
+  lcd.setCursor(3,3); lcd.write(5);
+  lcd.setCursor(4,3); lcd.write(6);
+  lcd.setCursor(4,2); lcd.write(7);
+  lcd.setCursor(4,1); lcd.write(8);
+
+  lcd.setCursor(8,1); lcd.print("BIENVENIDO");
+  lcd.setCursor(8,2); lcd.print("HIDROMATIC");
+  digitalWrite(ReleOzono, LOW);
+}
+
+void renderMsg(lcd_msg_id_t id)
+{
+  lcd.clear();
+  lcd.home();
+  lcd.print("********************");
+
+  switch (id)
+  {
+    case MSG_NO_CAMBIO:
+    {
       lcd.setCursor(5,1);
       lcd.print("Lo  siento");
       lcd.setCursor(4,2);
       lcd.print("No hay cambio");
-      lcd.setCursor(0,3);
-      lcd.print("*******************");
-      show = false; 
-      if((millis() - inicio) >= 4000){        
-        lcd.clear();
-        show = true;
-        borrar = true;
-        inicio = millis();
-      } 
+      break;
+    }
+
+    case MSG_LLENANDO:
+    {
+      lcd.setCursor(5,1);
+      lcd.print("Lo  siento");
+      lcd.setCursor(1,2);
+      lcd.print("Llenando deposito");
+      break;
+    }
+
+    default:
+    {
+      // Si llega algo raro, cae a Bienvenido afuera
+      break;
     }
   }
+
+  lcd.setCursor(0,3);
+  lcd.print("********************");
 }
+
+void cero(void)
+{
+  // Siempre “por default” Bienvenido cuando current_msg == BIENVENIDO
+  if (current_msg == MSG_BIENVENIDO)
+  {
+    renderBienvenido();
+  }
+
+  // Cambios cada 2 segundos
+  if ((millis() - lcd_msg_info_time_millis_last) >= 2000)
+  {
+    lcd_msg_info_time_millis_last = millis();
+
+    // Calcula siguiente
+    lcd_msg_id_t next = computeNextMsg(current_msg);
+
+    // Si cambia pantalla, renderiza
+    if (next != current_msg)
+    {
+      current_msg = next;
+
+      if (current_msg == MSG_BIENVENIDO)
+      {
+        lcd.clear();
+        renderBienvenido();
+      }
+      else
+      {
+        renderMsg(current_msg);
+      }
+    }
+    else
+    {
+      // Si no cambia y estamos en opcional, re-render por si cambió el LCD/estado
+      if (current_msg != MSG_BIENVENIDO)
+      {
+        renderMsg(current_msg);
+      }
+    }
+  }
+
+}
+/*=====================================================================*/
 
 void saldo () {
   if ( clearCoin == true ) {
@@ -270,7 +380,8 @@ void precioMostrar () {
   lcd.setCursor(0,3);
   lcd.print("*******************");
   delay(1500);
-  clearCoin = true; 
+  clearCoin = true;
+  lcd.clear();
 }
 
 void enjuague () {
@@ -485,11 +596,13 @@ void producto () { // NOTE: Despacho: despacho de producto
   resetCredit = millis();
 
   if(f_error_de_flujo)
-  {
-    // f_despacho_producto_terminado = true;
+  {    
     lcd.setCursor(2,1);
     lcd.print("Producto agotado");
+#if FLAG_LCD_MSG_PRODUCTO_AGOTADO == 1
+    f_despacho_producto_terminado = true;
     llenando_deposito_time_millis_last = millis();
+#endif
   }
   else
   {
@@ -497,6 +610,7 @@ void producto () { // NOTE: Despacho: despacho de producto
     lcd.print("Gracias por su");
     lcd.setCursor(6,2);
     lcd.print("compra!");
+    f_despacho_producto_terminado = false;
   }
 
 #if DEBUG_LOG_UART_ENABLED == 1

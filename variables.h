@@ -25,24 +25,18 @@ unsigned int CreditAcum = 0;
 
 
 // Multimoneda
-
 const byte interruptCoin = 47; //47 16
 volatile int pulseCoin = 0;
 unsigned long millisUltCoin = 0;
-unsigned int pulseCoinAcum = 0;
 //byte MaxTimePulseCoin = 45; // Configurar con el monedero 
 
 unsigned long creditTime = 0;
-unsigned long timeWait = 1000;
 unsigned long resetCredit = 0;
 
 // Billetero
-unsigned long DEBOUNCE_TIME = 100;
 const byte interruptBill = 45; //45 19
 volatile int pulseBill = 0;
 volatile long millisUltBill = 0;
-unsigned int pulseBillAcum = 0;
-unsigned int pulseBillAnterior = 0;
 //byte MaxTimePulseBill = 100; // Configurar con el billetero
 
 // HOPPER
@@ -75,7 +69,7 @@ unsigned long DEPACHO_PORCENTAJE_LCD_REFRESH_INTERVAL = 50;
 
 unsigned int Despacho_Umbral_Pulsos = 0;
 
-// bool f_despacho_producto_terminado = false;
+bool f_despacho_producto_terminado = false;
 unsigned long llenando_deposito_time_millis_last = 0;
 
 // calibracion de flujo
@@ -133,10 +127,24 @@ int feriar = 0;
 bool yaVendi = false;
 
 // ====================================================================
+// LCD MSGS
+// =====================================================================
+#define FLAG_LCD_MSG_PRODUCTO_AGOTADO 1
 
-bool show = true;
-bool borrar = true;
+// lcd msg credits
 bool clearCoin = true;
+// lcd msg info timer
+unsigned long lcd_msg_info_time_millis_last = 0;
+#define MSG_COUNT 3   // se incrementa segun el numero de mensajes
+typedef enum
+{
+  MSG_BIENVENIDO = 0,
+  MSG_NO_CAMBIO  = 1,
+  MSG_LLENANDO   = 2,
+  // Agrega aquí futuros mensajes:
+  // MSG_X = 3,
+} lcd_msg_id_t;
+static lcd_msg_id_t current_msg = MSG_BIENVENIDO;
 
 bool EnjuagueFirst = true;
 bool paroActivado = false;
