@@ -25,7 +25,7 @@ Se agrega la opcion de poder habilitar/deshabilitar la opción de poder feriar
 Se agrega detecccion de fujo de producto y cobro proporcional a la cantidad despachada y solucion al bug de creditos dummy generados al des/energizar los sistemas de credido (monedero y billetero)
 
 1.10
-Se agrega mensaje de "llenando deposito", se arreglo la aceptacion de creditos durante el despacho
+Se agrega mensaje de "llenando deposito", se arreglo la aceptacion de creditos durante el despacho, se estabilizo la pantalla de saldo para cuando se inserta credito
 
 */
 
@@ -39,7 +39,8 @@ Se agrega mensaje de "llenando deposito", se arreglo la aceptacion de creditos d
 #include "master.h"
 #include "menu.h"
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("VAP iniciado");
   Serial.println(firmware);
@@ -47,37 +48,46 @@ void setup() {
 
   EEPROM.begin(512);
   setupGeneral();
-  if(digitalRead(btReset) == LOW){
+  if (digitalRead(btReset) == LOW)
+  {
     delay(100);
-    if(digitalRead(btReset) == LOW){
+    if (digitalRead(btReset) == LOW)
+    {
       moodRestaurar = true;
       digitalWrite(LedReset, HIGH);
       lcd.clear();
       lcd.home();
       lcd.print("Deseas restaurar?");
-      lcd.setCursor(0,1);
+      lcd.setCursor(0, 1);
       lcd.print("  Si");
-      lcd.setCursor(0,2);
+      lcd.setCursor(0, 2);
       lcd.print("  No");
-      while(moodRestaurar == true){
+      while (moodRestaurar == true)
+      {
         // Movernos en el menu
-        if(digitalRead(bt1) == LOW) {
+        if (digitalRead(bt1) == LOW)
+        {
           delay(100);
-          if(digitalRead(bt1) == LOW) {
+          if (digitalRead(bt1) == LOW)
+          {
             flecha += 1;
-            if(flecha == 3){
-              flecha = 1;          
-            }        
+            if (flecha == 3)
+            {
+              flecha = 1;
+            }
           }
         }
 
-        if( flecha == 1 ) {
-          lcd.setCursor(0,1);
-          lcd.print("->");  
-          if(digitalRead(bt2) == LOW){
+        if (flecha == 1)
+        {
+          lcd.setCursor(0, 1);
+          lcd.print("->");
+          if (digitalRead(bt2) == LOW)
+          {
             delay(100);
-            if(digitalRead(bt2) == LOW){
-              firstTime ();
+            if (digitalRead(bt2) == LOW)
+            {
+              firstTime();
               moodRestaurar = false;
               digitalWrite(LedReset, LOW);
               delay(50);
@@ -86,111 +96,128 @@ void setup() {
               digitalWrite(LedReset, LOW);
               delay(50);
               digitalWrite(LedReset, HIGH);
-              delay(50);              
+              delay(50);
             }
-          }    
+          }
         }
 
-        if( flecha == 2 ) {
-          lcd.setCursor(0,1);
+        if (flecha == 2)
+        {
+          lcd.setCursor(0, 1);
           lcd.print("  ");
-          lcd.setCursor(0,2);
+          lcd.setCursor(0, 2);
           lcd.print("->");
-          if(digitalRead(bt2) == LOW){
+          if (digitalRead(bt2) == LOW)
+          {
             delay(100);
-            if(digitalRead(bt2) == LOW){
+            if (digitalRead(bt2) == LOW)
+            {
               moodRestaurar = false;
             }
-          } 
+          }
         }
-      }      
+      }
       digitalWrite(LedReset, LOW);
       lcd.clear();
       flecha = 1;
     }
   }
-  readEEPROM ();  
-  if(hopper2 == 1){
+  readEEPROM();
+  if (hopper2 == 1)
+  {
     Cambio5 = true;
   }
-  else {
+  else
+  {
     Cambio5 = false;
   }
   inicio = millis();
 }
 
-void loop() {
+void loop()
+{
   readMenu();
-  if ( CreditAcum == 0) {
-    cero ();
-    yaVendi=false;
-    contadorParo=1;
+  if (CreditAcum == 0)
+  {
+    cero();
+    yaVendi = false;
+    contadorParo = 1;
   }
 
-  // Monedero  
-  if(pulseCoin > 0)
+  // Monedero
+  if (pulseCoin > 0)
   {
-      CreditAcum += pulseCoin;
-      pulseCoin = 0;
-      creditTime = millis();
-      resetCredit = millis();
-  }
-
-  // Billetero
-  if(pulseBill > 0)
-  {
-    CreditAcum += (pulseBill * 10);
-    pulseBill = 0;
-    creditTime = millis();
+    CreditAcum += pulseCoin;
+    pulseCoin = 0;
     resetCredit = millis();
   }
 
-  if( CreditAcum > 0 )
+  // Billetero
+  if (pulseBill > 0)
   {
-    saldo ();
+    CreditAcum += (pulseBill * 10);
+    pulseBill = 0;
+    resetCredit = millis();
+  }
 
-    unsigned long debouncePulse = millis() - creditTime;
-    if ( debouncePulse > 100 ) {
+  if (CreditAcum > 0)
+  {
+    unsigned long debounceCredit = millis() - creditTime;
+    if (debounceCredit > 50)
+    {
+      creditTime = millis();
+      saldo();
 
       // Cambio
-      if ( digitalRead(bt5) == LOW){
+      if (digitalRead(bt5) == LOW)
+      {
         delay(100);
-        if ( digitalRead(bt5) == LOW) {
+        if (digitalRead(bt5) == LOW)
+        {
 
-          if(feriar == true)
-          { 
-              if (CreditAcum > 4){
-                if (Cambio5 == true){
-                  entregarCambio5();
-                }
+          if (feriar == true)
+          {
+            if (CreditAcum > 4)
+            {
+              if (Cambio5 == true)
+              {
+                entregarCambio5();
               }
-              if ((CreditAcum > 0 && recoja == false) && Cambio1 == true) {
-                entregarCambio1();
-              }
-              recoja = false;
-              if (Cambio1 == false) {
-                noCambio();
-              }
-              lcd.clear();
-              clearCoin = true;
-              pulseCoin = 0;
-              pulseBill = 0;
-              resetCredit = millis();
+            }
+            if ((CreditAcum > 0 && recoja == false) && Cambio1 == true)
+            {
+              entregarCambio1();
+            }
+            recoja = false;
+            if (Cambio1 == false)
+            {
+              noCambio();
+            }
+            lcd.clear();
+            clearCoin = true;
+            pulseCoin = 0;
+            pulseBill = 0;
+            resetCredit = millis();
+            EnjuagueFirst = true;
           }
           else
-          { 
-            if(yaVendi == true)
+          {
+            if (yaVendi == true)
             {
-              if (CreditAcum > 4){
-              if (Cambio5 == true){
+              if (CreditAcum > 4)
+              {
+                if (Cambio5 == true)
+                {
                   entregarCambio5();
                 }
               }
-              if ((CreditAcum > 0 && recoja == false) && Cambio1 == true) {
+              if ((CreditAcum > 0 && recoja == false) && Cambio1 == true)
+              {
                 entregarCambio1();
               }
               recoja = false;
-              if (Cambio1 == false) {
+              if (Cambio1 == false)
+              {
                 noCambio();
               }
               lcd.clear();
@@ -202,19 +229,21 @@ void loop() {
           }
         }
       }
-  //   }
-  // }
 
       // Enjuague
-      if ( digitalRead(bt1) == LOW) {
+      if (digitalRead(bt1) == LOW)
+      {
         delay(100);
-        if (digitalRead(bt1) == LOW) {
-          if(CreditAcum < priceEnjuague) {
-            precio = priceEnjuague; 
+        if (digitalRead(bt1) == LOW)
+        {
+          if (CreditAcum < priceEnjuague)
+          {
+            precio = priceEnjuague;
             precioMostrar();
           }
-          if (CreditAcum >= priceEnjuague && EnjuagueFirst == true) {
-            tiempoEnjuague = EEPROM.readInt(100); 
+          if (CreditAcum >= priceEnjuague && EnjuagueFirst == true)
+          {
+            tiempoEnjuague = EEPROM.readInt(100);
             enjuague();
             pulseCoin = 0;
             pulseBill = 0;
@@ -222,82 +251,93 @@ void loop() {
           }
         }
       }
+    }
+  }
 
-      // Producto 1
-      if (digitalRead(bt2) == LOW) {
-        delay(100);
-        if (digitalRead(bt2) == LOW) {
-          contadorParo=1;
-          precio = price1;
-          if(CreditAcum >= price1) {
-            producto1 = EEPROM.readInt(4);
-            Despacho_Umbral_Pulsos = EEPROM.readUInt(52);
-            product = producto1;
-            producto();
-            ventasProducto1 += 1;  
-            EEPROM.writeInt(36,ventasProducto1);            
-            EEPROM.commit(); 
-            yaVendi = true;
-          }
-          else {            
-            precioMostrar();
-          }                
-        }
+  // Producto 1
+  if (digitalRead(bt2) == LOW)
+  {
+    delay(100);
+    if (digitalRead(bt2) == LOW)
+    {
+      contadorParo = 1;
+      precio = price1;
+      if (CreditAcum >= price1)
+      {
+        producto1 = EEPROM.readInt(4);
+        Despacho_Umbral_Pulsos = EEPROM.readUInt(52);
+        product = producto1;
+        producto();
+        ventasProducto1 += 1;
+        EEPROM.writeInt(36, ventasProducto1);
+        EEPROM.commit();
+        yaVendi = true;
       }
-
-      // Producto 2
-      if (digitalRead(bt3) == LOW) {
-        delay(100);
-        if (digitalRead(bt3) == LOW) {
-          contadorParo=1;
-          precio = price2;
-          if(CreditAcum >= price2) {
-            producto2 = EEPROM.readInt(8);
-            Despacho_Umbral_Pulsos = EEPROM.readUInt(56);
-            product = producto2;
-            producto();
-            ventasProducto2 += 1;  
-            EEPROM.writeInt(40,ventasProducto2);
-            EEPROM.commit();
-            yaVendi = true; 
-          }
-          else {            
-            precioMostrar();
-          }              
-        }
+      else
+      {
+        precioMostrar();
       }
+    }
+  }
 
-      // Producto 3
-      if (digitalRead(bt4) == LOW) {
-        delay(100);
-        if (digitalRead(bt4) == LOW) {
-          contadorParo=1;
-          precio = price3;
-          if(CreditAcum >= price3) {
-            producto3 = EEPROM.readInt(12);
-            Despacho_Umbral_Pulsos = EEPROM.readUInt(60);
-            product = producto3;
-            producto();
-            ventasProducto3 += 1;  
-            EEPROM.writeInt(44,ventasProducto3);
-            EEPROM.commit();
-            yaVendi = true; 
-          }
-          else {            
-            precioMostrar();
-          }               
-        }
+  // Producto 2
+  if (digitalRead(bt3) == LOW)
+  {
+    delay(100);
+    if (digitalRead(bt3) == LOW)
+    {
+      contadorParo = 1;
+      precio = price2;
+      if (CreditAcum >= price2)
+      {
+        producto2 = EEPROM.readInt(8);
+        Despacho_Umbral_Pulsos = EEPROM.readUInt(56);
+        product = producto2;
+        producto();
+        ventasProducto2 += 1;
+        EEPROM.writeInt(40, ventasProducto2);
+        EEPROM.commit();
+        yaVendi = true;
+      }
+      else
+      {
+        precioMostrar();
+      }
+    }
+  }
+
+  // Producto 3
+  if (digitalRead(bt4) == LOW)
+  {
+    delay(100);
+    if (digitalRead(bt4) == LOW)
+    {
+      contadorParo = 1;
+      precio = price3;
+      if (CreditAcum >= price3)
+      {
+        producto3 = EEPROM.readInt(12);
+        Despacho_Umbral_Pulsos = EEPROM.readUInt(60);
+        product = producto3;
+        producto();
+        ventasProducto3 += 1;
+        EEPROM.writeInt(44, ventasProducto3);
+        EEPROM.commit();
+        yaVendi = true;
+      }
+      else
+      {
+        precioMostrar();
       }
     }
   }
 
   if (f_despacho_producto_terminado == true)
   {
-    if((millis() - llenando_deposito_time_millis_last) > (180000)) // (3 min default)
+    if ((millis() - llenando_deposito_time_millis_last) > (180000)) // (3 min default) - deshabilita el mensaje "llenando deposito"
     {
       llenando_deposito_time_millis_last = millis();
       f_despacho_producto_terminado = false;
     }
   }
-
 }

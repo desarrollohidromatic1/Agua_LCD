@@ -191,7 +191,7 @@ void saldo () {
   }
   
   unsigned long timeReset = millis() - resetCredit;
-  if(timeReset > 300000){ // 5 minnutos
+  if(timeReset > 300000){ // 5 minnutos - borra el credito acumulado si no se ha usado en ese tiempo
     CreditAcum = 0;
     lcd.clear();
     clearCoin = true;
