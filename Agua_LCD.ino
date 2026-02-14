@@ -334,7 +334,7 @@ void loop()
 
   if (f_despacho_producto_terminado == true)
   {
-    if ((millis() - llenando_deposito_time_millis_last) > (180000)) // (3 min default) - deshabilita el mensaje "llenando deposito"
+    if ((millis() - llenando_deposito_time_millis_last) > (600000)) // (10 min default) - deshabilita el mensaje "llenando deposito"
     {
       llenando_deposito_time_millis_last = millis();
       f_despacho_producto_terminado = false;

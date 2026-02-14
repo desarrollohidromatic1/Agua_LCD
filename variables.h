@@ -129,7 +129,7 @@ bool yaVendi = false;
 // ====================================================================
 // LCD MSGS
 // =====================================================================
-#define FLAG_LCD_MSG_PRODUCTO_AGOTADO 1
+#define FLAG_LCD_MSG_LLENANDO_DEPOSITO 1
 
 // lcd msg credits
 bool clearCoin = true;

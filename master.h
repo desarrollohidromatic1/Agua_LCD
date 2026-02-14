@@ -599,7 +599,7 @@ void producto () { // NOTE: Despacho: despacho de producto
   {    
     lcd.setCursor(2,1);
     lcd.print("Producto agotado");
-#if FLAG_LCD_MSG_PRODUCTO_AGOTADO == 1
+#if FLAG_LCD_MSG_LLENANDO_DEPOSITO == 1
     f_despacho_producto_terminado = true;
     llenando_deposito_time_millis_last = millis();
 #endif
