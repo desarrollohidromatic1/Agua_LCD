@@ -61,8 +61,8 @@ if ($inoText -match '#define\s+firmware\s+"([^"]+)"') {
 }
 Write-Host "Versión detectada desde firmware: $autoVersion"
 
-# Obtener nombre base del proyecto para el bin final
-$Project_BaseName = "MOVIL_VAP"
+# Obtener nombre base del proyecto para el bin final // HACK: ajustar segun el tipo de vending VAP
+$Project_BaseName = "FIJA_VAP"
 
 $dest = Join-Path $OutDir ("{0}_v{1}_with_bootloader.bin" -f $Project_BaseName, $autoVersion)
 

@@ -29,7 +29,7 @@ Se agrega mensaje de "llenando deposito", se arreglo la aceptacion de creditos d
 
 */
 
-#define firmware "1.10"
+#define firmware "1.11"
 
 #include <EEPROM.h>
 #include <LCD.h>
