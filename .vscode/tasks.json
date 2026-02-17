@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build MERGED BIN (ESP32-S3) with bootloader",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\build_merged_bin.ps1",
+        "-SketchPath",
+        "${workspaceFolder}\\Agua_LCD.ino",
+        "-FQBN",
+        "esp32:esp32:esp32s3",
+        "-OutDir",
+        "${workspaceFolder}\\build"
+      ],
+      "problemMatcher": [],
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}
